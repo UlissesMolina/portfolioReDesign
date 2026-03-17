@@ -1,17 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 
-const THEMES = [
-  { id: 'coral', label: 'Coral' },
-  { id: 'matrix', label: 'Matrix' },
-  { id: 'dracula', label: 'Dracula' },
-  { id: 'frost', label: 'Frost' },
-];
+function useColorInput(onCommit) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onInput = (e) => {
+      document.documentElement.classList.add('no-transitions');
+      document.documentElement.style.setProperty('--accent', e.target.value);
+      document.documentElement.style.setProperty('--accent-light', e.target.value + 'cc');
+    };
+    const onChange = (e) => {
+      document.documentElement.classList.remove('no-transitions');
+      onCommit(e.target.value);
+    };
+    el.addEventListener('input', onInput);
+    el.addEventListener('change', onChange);
+    return () => {
+      el.removeEventListener('input', onInput);
+      el.removeEventListener('change', onChange);
+    };
+  }, [onCommit]);
+  return ref;
+}
 
-export default function NavBar({ activeSection = '', time, theme = 'coral', onThemeChange }) {
+export default function NavBar({ activeSection = '', onNavClick, customColor = '#c0392b', onCustomColor }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [navAnimated, setNavAnimated] = useState(false);
-  const clockStr = time ? time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) : '--:--:--';
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const desktopColorRef = useColorInput(onCustomColor ?? (() => {}));
+  const mobileColorRef = useColorInput(onCustomColor ?? (() => {}));
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setNavAnimated(true));
@@ -25,10 +51,10 @@ export default function NavBar({ activeSection = '', time, theme = 'coral', onTh
   ];
 
   const linkClass = (id) => {
-    const base = 'text-sm font-medium transition-colors duration-200 px-2 py-1 rounded hover:underline underline-offset-2';
+    const base = 'text-sm font-medium transition-all duration-200 px-3 py-1.5 rounded-md';
     const active = id === activeSection;
-    if (active) return `${base} text-accent`;
-    return `${base} text-ink-muted hover:text-ink`;
+    if (active) return `${base} text-accent bg-accent/10`;
+    return `${base} text-ink-muted hover:text-ink hover:bg-white/6`;
   };
 
   const closeMobile = () => setMobileOpen(false);
@@ -47,14 +73,14 @@ export default function NavBar({ activeSection = '', time, theme = 'coral', onTh
   }, [mobileOpen]);
 
   return (
-    <nav className={`sticky top-0 z-30 w-full border-b border-surface-border bg-surface-bg/90 backdrop-blur-sm transition-colors duration-300 ${navAnimated ? 'animate-nav-slide-in' : 'opacity-0 -translate-y-full'}`}>
+    <nav className={`sticky top-0 z-30 w-full border-b transition-all duration-300 bg-surface-bg/90 backdrop-blur-[20px] ${scrolled ? 'border-surface-border' : 'border-transparent'} ${navAnimated ? 'animate-nav-slide-in' : 'opacity-0 -translate-y-full'}`}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4">
         <a
           href="#"
           onClick={closeMobile}
-          className="text-base sm:text-lg font-mono font-semibold tracking-wide transition-colors shrink-0 hover:underline underline-offset-2 flex items-baseline gap-0.5 text-ink hover:text-accent animate-nav-link-in"
+          className="text-base sm:text-lg font-sans font-semibold tracking-tight transition-colors shrink-0 hover:text-accent text-ink animate-nav-link-in"
         >
-          <span className="text-accent">$</span> ulisses@molina <span className="text-ink-dim">~</span>
+          Ulisses Molina
         </a>
 
         <div className="hidden md:flex flex-wrap items-center justify-center gap-6 sm:gap-8">
@@ -62,6 +88,7 @@ export default function NavBar({ activeSection = '', time, theme = 'coral', onTh
             <a
               key={href}
               href={href}
+              onClick={(e) => { e.preventDefault(); onNavClick?.(href.slice(1)); }}
               className={`${linkClass(href.slice(1))} animate-nav-link-in`}
             >
               {label}
@@ -70,39 +97,42 @@ export default function NavBar({ activeSection = '', time, theme = 'coral', onTh
           <a
             href="/uliResume.pdf"
             download="uliResume.pdf"
-            className="text-sm font-medium transition-colors px-2 py-1 rounded hover:underline underline-offset-2 text-ink-muted hover:text-accent animate-nav-link-in"
+            className="text-sm font-medium transition-all duration-200 px-3 py-1.5 rounded-md text-ink-muted hover:text-accent hover:bg-accent/8 animate-nav-link-in"
           >
             Resume
           </a>
-          <span className="text-xs font-mono tabular-nums text-ink-dim animate-nav-link-in" aria-hidden>
-            {clockStr}
-          </span>
-          {onThemeChange && (
-            <select
-              value={theme}
-              onChange={(e) => onThemeChange(e.target.value)}
-              className="text-xs font-mono rounded px-2 py-1 border cursor-pointer border-surface-border text-ink bg-surface-card hover:text-accent focus:border-accent animate-nav-link-in"
-              aria-label="Accent theme"
-            >
-              {THEMES.map((t) => (
-                <option key={t.id} value={t.id}>{t.label}</option>
-              ))}
-            </select>
+          {onCustomColor && (
+            <label title="Accent color" className="cursor-pointer animate-nav-link-in" style={{ lineHeight: 0 }}>
+              <input
+                ref={desktopColorRef}
+                type="color"
+                defaultValue={customColor}
+                className="sr-only"
+                aria-label="Accent color"
+              />
+              <span
+                className="block w-6 h-6 rounded-full border-2 border-surface-border hover:border-accent hover:scale-110 transition-all duration-200"
+                style={{ background: 'var(--accent)' }}
+              />
+            </label>
           )}
         </div>
 
         <div className="flex md:hidden items-center gap-2">
-          {onThemeChange && (
-            <select
-              value={theme}
-              onChange={(e) => onThemeChange(e.target.value)}
-              className="text-xs font-mono rounded px-2 py-1 border border-surface-border text-ink bg-surface-card"
-              aria-label="Accent theme"
-            >
-              {THEMES.map((t) => (
-                <option key={t.id} value={t.id}>{t.label}</option>
-              ))}
-            </select>
+          {onCustomColor && (
+            <label title="Accent color" className="cursor-pointer" style={{ lineHeight: 0 }}>
+              <input
+                ref={mobileColorRef}
+                type="color"
+                defaultValue={customColor}
+                className="sr-only"
+                aria-label="Accent color"
+              />
+              <span
+                className="block w-6 h-6 rounded-full border-2 border-surface-border"
+                style={{ background: 'var(--accent)' }}
+              />
+            </label>
           )}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -123,8 +153,8 @@ export default function NavBar({ activeSection = '', time, theme = 'coral', onTh
             <a
               key={href}
               href={href}
-              onClick={closeMobile}
-              className={`py-3 px-3 rounded-lg text-base ${linkClass(href.slice(1))} hover:bg-white/5`}
+              onClick={(e) => { e.preventDefault(); onNavClick?.(href.slice(1)); closeMobile(); }}
+              className={`py-3 px-3 text-base ${linkClass(href.slice(1))} hover:bg-white/5`}
             >
               {label}
             </a>
@@ -133,7 +163,7 @@ export default function NavBar({ activeSection = '', time, theme = 'coral', onTh
             href="/uliResume.pdf"
             download="uliResume.pdf"
             onClick={closeMobile}
-            className="py-3 px-3 rounded-lg text-base font-medium transition-colors hover:underline underline-offset-2 text-ink-muted hover:text-accent hover:bg-white/5"
+            className="py-3 px-3 text-base font-medium transition-colors hover:underline underline-offset-2 text-ink-muted hover:text-accent hover:bg-white/5"
           >
             Resume
           </a>

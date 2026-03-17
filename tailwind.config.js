@@ -7,8 +7,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['DM Sans', 'system-ui', 'sans-serif'],
-        serif: ['Literata', 'Georgia', 'serif'],
+        sans: ['Satoshi', 'system-ui', 'sans-serif'],
+        serif: ['Instrument Serif', 'Georgia', 'serif'],
+        mono: ['JetBrains Mono', 'Consolas', 'monospace'],
       },
       colors: {
         accent: {
@@ -17,14 +18,15 @@ export default {
           dark: '#e55a2b',
         },
         surface: {
-          bg: '#050a0f',
-          card: '#0f1419',
-          border: '#1c2128',
+          bg: 'rgb(var(--surface-bg) / <alpha-value>)',
+          inset: 'rgb(var(--surface-inset) / <alpha-value>)',
+          card: 'rgb(var(--surface-card) / <alpha-value>)',
+          border: 'rgb(var(--surface-border) / <alpha-value>)',
         },
         ink: {
-          DEFAULT: '#e6edf3',
-          muted: '#8b949e',
-          dim: '#484f58',
+          DEFAULT: 'rgb(var(--ink) / <alpha-value>)',
+          muted: 'rgb(var(--ink-muted) / <alpha-value>)',
+          dim: 'rgb(var(--ink-dim) / <alpha-value>)',
         },
       },
       backgroundImage: {

@@ -2,54 +2,38 @@ import './App.css'
 import { useEffect, useRef, useState } from 'react';
 import { FaEnvelope, FaGithub, FaLinkedin, FaFileAlt } from 'react-icons/fa';
 import NavBar from './components/NavBar';
-import Terminal from './components/Terminal';
 import ProjectCard from './components/ProjectCard';
-import RecentCommitsCard from './components/RecentCommitsCard';
-import ParticleNetwork from './components/ParticleNetwork';
+import ContributionHeatmap from './components/ContributionHeatmap';
+import MapCard from './components/MapCard';
+import ClickCounter from './components/ClickCounter';
+import StackCard from './components/StackCard';
+import SideBars from './components/SideBars';
+import CursorTrail from './components/CursorTrail';
+import ParticleConstellation from './components/ParticleConstellation';
 
-
-const GITHUB_USER = 'UlissesMolina';
-const THEME_OPTIONS = ['coral', 'matrix', 'dracula', 'frost'];
-
-function formatSessionTime(ms) {
-  const totalSeconds = Math.floor(ms / 1000);
-  const s = totalSeconds % 60;
-  const m = Math.floor(totalSeconds / 60) % 60;
-  const h = Math.floor(totalSeconds / 3600);
-  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  return `${m}:${String(s).padStart(2, '0')}`;
+function SectionHeader({ number, title, visible }) {
+  return (
+    <div className={`flex items-center gap-4 mb-8 w-full ${visible ? 'anim-float-up' : 'opacity-0'}`}>
+      <span className="font-mono text-sm text-accent">{number}</span>
+      <h2 className="font-serif text-2xl sm:text-3xl text-ink whitespace-nowrap">{title}</h2>
+      <div className="flex-1 h-px bg-surface-border" />
+    </div>
+  );
 }
 
 function App() {
   const sectionRefs = useRef([]);
-  const sessionStartRef = useRef(Date.now());
-  const [time, setTime] = useState(() => new Date());
-  const [commitsThisWeek, setCommitsThisWeek] = useState(null);
-  const [expandedExpIndex, setExpandedExpIndex] = useState(null);
   const [activeSection, setActiveSection] = useState('');
   const [visibleSections, setVisibleSections] = useState(new Set());
   const [loadingBarActive, setLoadingBarActive] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem('portfolio-theme');
-      if (THEME_OPTIONS.includes(saved)) return saved;
-    } catch {}
-    return 'coral';
-  });
-
-  const handleThemeChange = (newTheme) => {
-    setTheme(newTheme);
-    try {
-      sessionStorage.setItem('portfolio-theme', newTheme);
-    } catch {}
-  };
+  const [isDark, setIsDark] = useState(true);
+  const [customColor, setCustomColor] = useState('#c0392b');
   const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
-  const [konamiMessage, setKonamiMessage] = useState(null);
-  const [terminalOverlayOpen, setTerminalOverlayOpen] = useState(false);
-  const [terminalOverlayClosing, setTerminalOverlayClosing] = useState(false);
-  const [heroCardAnimated, setHeroCardAnimated] = useState(false);
-  const terminalCloseTimeoutRef = useRef(null);
+  const [clockTime, setClockTime] = useState('');
+  const [nameGlitch, setNameGlitch] = useState(false);
+  const nameClickRef = useRef({ timestamps: [] });
+  const [activeTag, setActiveTag] = useState(null);
 
   const showToast = (msg) => {
     setToast(msg);
@@ -57,19 +41,26 @@ function App() {
     toastTimerRef.current = setTimeout(() => setToast(null), 2000);
   };
 
+  const handleNameClick = () => {
+    const now = Date.now();
+    const ts = nameClickRef.current.timestamps;
+    ts.push(now);
+    const recent = ts.filter(t => now - t < 1800);
+    nameClickRef.current.timestamps = recent;
+    if (recent.length >= 7) {
+      nameClickRef.current.timestamps = [];
+      setNameGlitch(false);
+      requestAnimationFrame(() => {
+        setNameGlitch(true);
+        setTimeout(() => setNameGlitch(false), 800);
+      });
+      showToast('secret unlocked.');
+    }
+  };
+
   const handleCopyEmail = (e) => {
     e.preventDefault();
     navigator.clipboard.writeText('umolina2005@gmail.com').then(() => showToast('✓ Email copied'));
-  };
-
-  const closeTerminalOverlay = () => {
-    if (terminalOverlayClosing) return;
-    setTerminalOverlayClosing(true);
-    terminalCloseTimeoutRef.current = setTimeout(() => {
-      setTerminalOverlayOpen(false);
-      setTerminalOverlayClosing(false);
-      terminalCloseTimeoutRef.current = null;
-    }, 260);
   };
 
   const scrollToSection = (id) => {
@@ -82,27 +73,6 @@ function App() {
     const t = setTimeout(() => setLoadingBarActive(false), 500);
     return () => clearTimeout(t);
   }, [loadingBarActive]);
-
-  useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const since = weekAgo.toISOString().split('T')[0];
-    fetch(`https://api.github.com/repos/${GITHUB_USER}/Portfolio/commits?per_page=100&since=${weekAgo.toISOString()}`, {
-      headers: { Accept: 'application/vnd.github.v3+json' },
-    })
-      .then((res) => res.ok ? res.json() : [])
-      .then((data) => {
-        if (!cancelled && Array.isArray(data)) setCommitsThisWeek(data.length);
-      })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, []);
 
   useEffect(() => {
     const ids = ['about', 'experience', 'projects', 'contact'];
@@ -120,40 +90,35 @@ function App() {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
-
     const onScroll = () => {
       const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80;
       if (nearBottom) setActiveSection('contact');
     };
     window.addEventListener('scroll', onScroll, { passive: true });
-
     return () => {
       observer.disconnect();
       window.removeEventListener('scroll', onScroll);
     };
   }, []);
 
+  useEffect(() => () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); }, []);
 
   useEffect(() => {
-    return () => {
-      if (terminalCloseTimeoutRef.current) clearTimeout(terminalCloseTimeoutRef.current);
-      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    };
+    document.documentElement.classList.toggle('dark', isDark);
+    document.documentElement.classList.toggle('light', !isDark);
+  }, [isDark]);
+
+  useEffect(() => {
+    const fmt = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    setClockTime(fmt());
+    const id = setInterval(() => setClockTime(fmt()), 1000);
+    return () => clearInterval(id);
   }, []);
 
   useEffect(() => {
-    const t = requestAnimationFrame(() => {
-      setHeroCardAnimated(true);
-    });
-    return () => cancelAnimationFrame(t);
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-  }, []);
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme === 'monokai' ? 'coral' : theme);
-  }, [theme]);
+    document.documentElement.style.setProperty('--accent', customColor);
+    document.documentElement.style.setProperty('--accent-light', customColor + 'cc');
+  }, [customColor]);
 
   const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   useEffect(() => {
@@ -163,23 +128,16 @@ function App() {
       if (key === KONAMI[idx]) {
         idx += 1;
         if (idx === KONAMI.length) {
-          setKonamiMessage(" No way you tried the Konami code.");
+          showToast('No way you tried the Konami code.');
           idx = 0;
         }
-      } else {
-        idx = 0;
-      }
+      } else { idx = 0; }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   useEffect(() => {
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -187,21 +145,12 @@ function App() {
             if (prev.has(entry.target.id)) return prev;
             return new Set([...prev, entry.target.id]);
           });
-          if (entry.target.id === 'experience') {
-            entry.target.classList.add('timeline-ready');
-          }
         }
       });
-    }, observerOptions);
-
-    sectionRefs.current.forEach(ref => {
-      if (ref) observer.observe(ref);
-    });
-
+    }, { threshold: 0.08, rootMargin: '0px 0px -120px 0px' });
+    sectionRefs.current.forEach(ref => { if (ref) observer.observe(ref); });
     return () => {
-      sectionRefs.current.forEach(ref => {
-        if (ref) observer.unobserve(ref);
-      });
+      sectionRefs.current.forEach(ref => { if (ref) observer.unobserve(ref); });
       observer.disconnect();
     };
   }, []);
@@ -210,32 +159,14 @@ function App() {
     {
       company: 'Room2Room Movers',
       title: 'Part-Time Software Engineering Intern',
-      location: 'Auburn AL',
-      period: 'January 2026 - Present',
-      logo: 'R2R',
+      period: 'January 2026 – Present',
       tech: ['React', 'TypeScript', 'Firebase', 'Jira'],
-      bullets: [
-        '• Developed and maintained application features using React and TypeScript in a production codebase',
-        '• Implemented and updated Firebase-backed backend logic and API endpoints to support application functionality',
-        '• Worked with authentication, configuration data, and state management across frontend and backend',
-        '• Collaborated with engineers through Jira tickets, pull requests, and code reviews in an agile workflow',
-        '• Fixed bugs and improved code quality by debugging React hooks and shared application state',
-      ],
     },
     {
       company: 'OCV, LLC',
       title: 'Part-Time Software Engineering Intern',
-      location: 'Opelika AL',
-      period: 'September 2025 - Present',
-      logo: 'OCV',
+      period: 'September 2025 – Present',
       tech: ['JSON', 'iOS', 'Android', 'QC'],
-      bullets: [
-        '• Released and maintained iOS and Android apps on the App Store and Google Play Console, ensuring smooth deployment and version tracking',
-        '• Built and configured client mobile apps using OCV\'s proprietary platform and formatted JSON structures',
-        '• Implemented client requests by updating app content, configurations, and feature settings through internal tools',
-        '• Performed quality control (QC) testing to ensure app functionality and UI consistency before release',
-        '• Collaborated with developers, operations, and graphics teams to manage app updates and production issues',
-      ],
     },
   ];
 
@@ -243,45 +174,34 @@ function App() {
     {
       title: 'Trackr',
       description: 'Full-stack job application tracker with a Kanban board, analytics dashboard, and CSV bulk import. Uses OpenAI GPT-4o to generate personalized cover letters from resume data. Clerk auth, RESTful API, TanStack Query.',
-      tags: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Prisma', 'OpenAI', 'Clerk'],
+      tags: ['React', 'TypeScript', 'Node.js', 'OpenAI'],
       githubUrl: 'https://github.com/UlissesMolina/Trackr',
       demoUrl: 'https://usetrackr.netlify.app/',
-      media: null,
       featured: true,
       type: 'Web App',
-      snippet: `const { data } = useQuery({
-  queryKey: ['jobs', status],
-  queryFn: () => api.getJobs(status),
-});
-
-const { mutate } = useMutation({
-  mutationFn: generateCoverLetter,
-  onMutate: async (resume) => {
-    await queryClient.cancelQueries(['coverLetter']);
-    const prev = queryClient.getQueryData(['coverLetter']);
-    queryClient.setQueryData(['coverLetter'], { draft: '...' });
-    return { prev };
-  },
+      snippetFile: 'useJobs.ts',
+      snippet: `const { data: jobs } = useQuery({
+  queryKey: ['jobs', filters],
+  queryFn: () => api.getJobs(filters),
+  staleTime: 1000 * 60 * 5,
 });`,
     },
     {
       title: 'Tiger Scheduler Course Auto-Register Tool',
-      description: 'A Python automation script that monitors course availability on Auburn University\'s TigerScheduler platform. Automatically checks for open seats every minute, filters courses, and handles auto-login and registration actions.',
+      description: 'Python automation that polls Auburn\'s TigerScheduler every 60 seconds, detects open seats, and auto-registers — handling login, course filtering, and retries.',
       tags: ['Python', 'Selenium', 'Web Automation'],
       githubUrl: 'https://github.com/UlissesMolina/Tiger-Scheduler-Course-Auto-Register-Tool',
       demoUrl: null,
-      media: { type: 'video', url: '/script.mp4' },
       featured: false,
       type: 'Automation',
-      snippet: `from selenium import webdriver
-
-while True:
-  seats = check_availability(course_id)
-  if seats > 0:
-    driver.find_element(By.ID, "register").click()
-    register(course)
-    send_notification()
-  time.sleep(poll_interval)`,
+      snippetFile: 'scheduler.py',
+      snippet: `while True:
+    driver.get(SCHEDULE_URL)
+    seats = driver.find_element(By.ID, 'open_seats')
+    if seats.text != '0':
+        enroll(driver, course_id)
+        break
+    time.sleep(60)`,
     },
     {
       title: 'Clarity Finance',
@@ -289,386 +209,322 @@ while True:
       tags: ['React', 'TypeScript', 'CSS'],
       githubUrl: 'https://github.com/UlissesMolina/FinanceDashBoard',
       demoUrl: 'https://clarityfi.netlify.app/',
-      media: null,
       featured: false,
       type: 'Web App',
-      snippet: `function Dashboard() {
-  const [data, setData] = useState<FinanceData | null>(null);
-  useEffect(() => fetchFinanceData().then(setData), []);
-  return (
-    <div className="dashboard">
-      <SummaryCards data={data} />
-      <Charts data={data} />
-    </div>
-  ); }`,
+      snippetFile: 'useSummary.ts',
+      snippet: `const balance = transactions.reduce(
+  (sum, tx) =>
+    tx.type === 'income'
+      ? sum + tx.amount
+      : sum - tx.amount,
+  0
+);`,
     },
     {
       title: 'Enterprise Expense Management API',
       description: 'Layered Spring Boot REST API with JWT auth and role-based access control via Spring Security. Features transactional approval workflows, audit logging, and PostgreSQL persistence. Integration-tested with Testcontainers and documented with OpenAPI/Swagger. Containerized with Docker and Docker Compose.',
-      tags: ['Java', 'Spring Boot', 'PostgreSQL', 'Docker', 'JWT', 'Testcontainers'],
+      tags: ['Java', 'Spring Boot', 'PostgreSQL', 'Docker'],
       githubUrl: 'https://github.com/UlissesMolina/Enterprise',
       demoUrl: null,
-      media: null,
       featured: true,
       type: 'REST API',
-      snippet: `@RestController
-@RequestMapping("/api/expenses")
-class ExpenseController {
-
-  @PostMapping("/submit")
-  public ResponseEntity<Expense> submit(
-      @Valid @RequestBody ExpenseRequest req) {
-    return ResponseEntity.ok(
-      service.submit(req));
-  }
-
-  @PostMapping("/{id}/approve")
-  @PreAuthorize("hasRole('MANAGER')")
-  public ResponseEntity<Expense> approve(
-      @PathVariable Long id) {
-    return ResponseEntity.ok(
-      service.approve(id));
-  }
+      snippetFile: 'ExpenseController.java',
+      snippet: `@PostMapping("/{id}/approve")
+@PreAuthorize("hasRole('MANAGER')")
+public ResponseEntity<Expense> approve(
+    @PathVariable Long id) {
+  return ResponseEntity.ok(
+    service.approve(id));
 }`,
     },
   ];
 
   return (
     <div className="relative min-h-screen font-sans transition-colors duration-300 bg-surface-grid">
-      <ParticleNetwork />
+      <CursorTrail />
       {loadingBarActive && <div className="load-bar" aria-hidden="true" />}
+      <SideBars isDark={isDark} onToggleDark={() => setIsDark(d => !d)} />
       <NavBar
         activeSection={activeSection}
-        time={time}
-        theme={theme}
-        onThemeChange={handleThemeChange}
+        onNavClick={scrollToSection}
+        customColor={customColor}
+        onCustomColor={setCustomColor}
       />
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 z-10 flex flex-col">
-        <header id="about" className="pt-12 pb-10 scroll-mt-[5rem]">
-          <div className="w-full max-w-4xl mx-auto">
-            <div className="max-w-4xl mx-auto mt-12 space-y-8">
-              <div className={`bg-surface-bg border border-white/[0.03] rounded-lg p-8 ${heroCardAnimated ? 'animate-fade-in' : 'opacity-0'}`}>
-                <h2 className="text-2xl font-bold text-ink mb-4">Ulisses Molina</h2>
-                <p className="text-ink-muted text-lg mb-6">
-                  Software Engineering @ Auburn University
-                  <br />
-                  Building tools with React, TypeScript, and Python.
-                  <br />
-                  Open to Summer 2026 SWE internships (full-stack, automation, web dev).
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection('experience')}
-                    className="px-4 py-2 bg-accent/10 hover:bg-accent/20 text-accent rounded font-medium transition-colors"
-                  >
-                    View Work
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection('projects')}
-                    className="px-4 py-2 bg-accent/10 hover:bg-accent/20 text-accent rounded font-medium transition-colors"
-                  >
-                    See Projects
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => window.open('/uliResume.pdf', '_blank')}
-                    className="px-5 py-2 bg-accent hover:bg-accent-light text-surface-bg rounded font-semibold transition-colors"
-                  >
-                    View Resume
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTerminalOverlayOpen(true)}
-                    className="px-4 py-2 bg-accent/10 hover:bg-accent/20 text-accent rounded font-medium transition-colors flex items-center gap-2"
-                    aria-label="Open terminal"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0" aria-hidden>
-                      <path opacity="0.1" d="M3 8C3 6.11438 3 5.17157 3.58579 4.58579C4.17157 4 5.11438 4 7 4H12H17C18.8856 4 19.8284 4 20.4142 4.58579C21 5.17157 21 6.11438 21 8V12V16C21 17.8856 21 18.8284 20.4142 19.4142C19.8284 20 18.8856 20 17 20H12H7C5.11438 20 4.17157 20 3.58579 19.4142C3 18.8284 3 17.8856 3 16V12V8Z" fill="currentColor" />
-                      <path d="M13 15H16" />
-                      <path d="M8 15L10.5 12.5V12.5C10.7761 12.2239 10.7761 11.7761 10.5 11.5V11.5L8 9" />
-                      <path d="M3 8C3 6.11438 3 5.17157 3.58579 4.58579C4.17157 4 5.11438 4 7 4H12H17C18.8856 4 19.8284 4 20.4142 4.58579C21 5.17157 21 6.11438 21 8V12V16C21 17.8856 21 18.8284 20.4142 19.4142C19.8284 20 18.8856 20 17 20H12H7C5.11438 20 4.17157 20 3.58579 19.4142C3 18.8284 3 17.8856 3 16V12V8Z" />
-                    </svg>
-                    Terminal
-                  </button>
-                </div>
-              </div>
+
+        {/* ── HERO ── */}
+        <header id="about" className="relative pt-20 pb-14 scroll-mt-[5rem]">
+          {/* Grid background */}
+          <div className="hero-bg" aria-hidden="true" />
+          {/* Particle constellation */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute hidden sm:block"
+            style={{ width: '560px', height: '560px', right: '-50px', top: '50%', transform: 'translateY(-50%)', zIndex: 0 }}
+          >
+            <ParticleConstellation />
+          </div>
+
+          <div className="relative z-10 max-w-3xl">
+            <p
+              className="slide-up flex items-center gap-3 font-mono text-xs text-accent tracking-widest uppercase mb-5"
+              style={{ animationDelay: '0.1s' }}
+            >
+              <span className="h-px w-8 bg-accent shrink-0" />
+              Software Engineer
+            </p>
+
+            <h1
+              className={`slide-up font-serif text-ink leading-[1.0] tracking-tight mb-6 cursor-pointer select-none${nameGlitch ? ' name-glitch' : ''}`}
+              style={{ fontSize: 'clamp(56px, 8vw, 110px)', animationDelay: '0.2s' }}
+              onClick={handleNameClick}
+            >
+              {'Ulisses Molina'.split('').map((char, i) => (
+                <span
+                  key={i}
+                  className="inline-block hover:text-accent transition-colors duration-150"
+                  style={{ whiteSpace: char === ' ' ? 'pre' : undefined }}
+                >
+                  {char}
+                </span>
+              ))}
+            </h1>
+
+            <p
+              className="slide-up text-ink-muted text-base sm:text-lg leading-relaxed mb-8 max-w-[55ch]"
+              style={{ animationDelay: '0.35s' }}
+            >
+              Full-stack development, SWE @ Auburn University.
+            </p>
+
+            <div
+              className="slide-up flex flex-wrap gap-3"
+              style={{ animationDelay: '0.48s' }}
+            >
+              <button
+                type="button"
+                onClick={() => scrollToSection('projects')}
+                className="px-5 py-2.5 rounded-lg bg-accent text-surface-bg text-sm font-semibold transition-colors duration-200 hover:bg-accent-light"
+              >
+                View Projects
+              </button>
+              <button
+                type="button"
+                onClick={() => window.open('/uliResume.pdf', '_blank')}
+                className="px-5 py-2.5 rounded-lg border border-surface-border text-ink-muted hover:border-accent/50 hover:text-ink text-sm font-medium transition-all duration-200"
+              >
+                Resume
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollToSection('experience')}
+                className="px-5 py-2.5 rounded-lg border border-surface-border text-ink-muted hover:border-accent/50 hover:text-ink text-sm font-medium transition-all duration-200"
+              >
+                View Work
+              </button>
             </div>
           </div>
         </header>
-        <main className="flex flex-col gap-16 sm:gap-20">
+
+        <main className="flex flex-col gap-14">
+
+          {/* ── EXPERIENCE ── */}
           <section
             id="experience"
             ref={el => sectionRefs.current[0] = el}
             className="flex flex-col items-start w-full"
           >
-            <div className={`font-mono text-sm sm:text-base mb-2 text-ink`}>
-              <div className="flex items-baseline gap-2">
-                <span className="text-accent select-none">$</span>
-                <span>work</span>
-                <span className="cursor-blink text-accent">▋</span>
-              </div>
-              <div className={`pl-4 mt-0.5 text-ink-muted`}>→ work</div>
-            </div>
-            <div className={`w-full border-t mb-8 border-surface-border`} style={{ maxWidth: '32rem' }} />
-            <div className="w-full max-w-3xl">
-              {experiences.map((exp, index) => {
-                const isExpanded = expandedExpIndex === index;
-                const hasMore = exp.bullets.length > 1;
-                const isLast = index === experiences.length - 1;
-                return (
-                  <div
-                    key={index}
-                    className={`group/exp relative flex items-stretch gap-5 pb-10 last:pb-0 ${visibleSections.has('experience') ? 'stagger-child' : 'opacity-0'}`}
-                    style={{ animationDelay: visibleSections.has('experience') ? `${index * 120}ms` : undefined }}
-                  >
-                    <div className="relative flex w-4 flex-shrink-0 flex-col items-center pt-1">
-                      <div
-                        className={`relative z-[2] h-4 w-4 rounded-full border-2 animate-dot-pulse transition-all duration-200 group-hover/exp:scale-125 bg-accent border-accent/60 ${index === 0 ? 'timeline-dot--first' : 'timeline-dot timeline-dot--animated'}`}
-                        style={index > 0 ? { '--timeline-delay': `${0.5 * index}s` } : undefined}
-                      />
-                      {!isLast && (
-                        <div
-                          className="timeline-connector timeline-connector--animated z-0"
-                          style={{ '--timeline-delay': `${0.2 + index * 0.5}s` }}
-                          aria-hidden
-                        />
+            <SectionHeader number="01" title="Experience" visible={visibleSections.has('experience')} />
+            <div className="w-full max-w-3xl divide-y divide-surface-border">
+              {experiences.map((exp, index) => (
+                <div
+                  key={index}
+                  className={`group grid exp-row gap-2 py-8 hover:bg-surface-card/30 px-3 -mx-3 rounded-lg transition-colors duration-200 ${visibleSections.has('experience') ? 'anim-from-left' : 'opacity-0'}`}
+                  style={{ animationDelay: visibleSections.has('experience') ? `${index * 120}ms` : undefined }}
+                >
+                  <p className="font-mono text-xs text-ink-dim leading-relaxed pt-0.5">{exp.period}</p>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      {exp.period.includes('Present') && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden />
                       )}
+                      <span className="font-medium text-ink text-sm">{exp.title}</span>
                     </div>
-                    <div className={`flex-1 rounded-lg px-4 py-3 transition-all duration-200
-                      bg-surface-card border border-surface-border hover:border-accent/30`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-xs font-semibold bg-surface-border text-accent">
-                          {exp.logo}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className={`font-medium mb-0.5 flex items-center gap-2 transition-colors text-ink`}>
-                            {exp.period.toLowerCase().includes('present') && (
-                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden title="Current role" />
-                            )}
-                            {exp.title}
-                          </h3>
-                          <p className={`text-sm mb-1 transition-colors text-ink-muted`}>
-                            {exp.company} · {exp.location}
-                          </p>
-                          <p className={`text-xs font-mono mb-2 transition-colors text-ink-muted`}>
-                            {exp.period}
-                          </p>
-                          <div className="flex flex-wrap gap-1.5 mb-2">
-                            {exp.tech.map((t) => (
-                              <span
-                                key={t}
-                                className="inline-flex items-center text-[10px] px-2 py-1 rounded-md transition-all duration-300 text-ink-muted border border-surface-border bg-surface-border/40 hover:text-accent hover:border-accent/40 hover:shadow-[0_0_6px_var(--accent)]"
-                              >
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <ul className="list-none space-y-1.5 text-xs sm:text-sm transition-colors text-ink-muted">
-                        <li className="leading-snug">{exp.bullets[0]}</li>
-                        {hasMore && (
-                          <>
-                            <div className={`expandable-content ${isExpanded ? 'expanded' : ''}`}>
-                              <div>
-                                {exp.bullets.slice(1).map((bullet, idx) => (
-                                  <li key={idx} className="leading-snug pt-0.5">{bullet}</li>
-                                ))}
-                              </div>
-                            </div>
-                            <li>
-                              <button
-                                type="button"
-                                onClick={() => setExpandedExpIndex(isExpanded ? null : index)}
-                                className="inline-flex items-center gap-1 text-xs font-medium transition-colors text-accent hover:text-accent-light"
-                              >
-                                {isExpanded ? 'Show less' : `Show ${exp.bullets.length - 1} more`}
-                                <svg
-                                  width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                  strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                                  className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                                  aria-hidden
-                                >
-                                  <polyline points="6 9 12 15 18 9" />
-                                </svg>
-                              </button>
-                            </li>
-                          </>
-                        )}
-                      </ul>
-                    </div>
+                    <p className="text-sm font-medium" style={{ color: 'var(--accent)' }}>{exp.company}</p>
                   </div>
-                );
-              })}
+                  <div className="flex flex-wrap gap-1.5 sm:justify-end">
+                    {exp.tech.map((t) => (
+                      <span
+                        key={t}
+                        className="font-mono text-[10px] px-2 py-0.5 rounded-md border border-surface-border text-ink-dim group-hover:border-accent/30 group-hover:text-accent/70 transition-colors duration-200"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
+
+          {/* ── PROJECTS ── */}
           <section
             id="projects"
             ref={el => sectionRefs.current[1] = el}
             className="flex flex-col items-start w-full"
           >
-            <div className={`font-mono text-sm sm:text-base mb-2 text-ink`}>
-              <div className="flex items-baseline gap-2">
-                <span className="text-accent select-none">$</span>
-                <span>cat projects/</span>
-                <span className="cursor-blink text-accent">▋</span>
-              </div>
-              <div className={`pl-4 mt-0.5 text-ink-muted`}>→ projects</div>
-            </div>
-            <div className={`w-full border-t mb-8 border-surface-border`} style={{ maxWidth: '32rem' }} />
-            <div className="grid gap-5 w-full max-w-4xl grid-cols-1 sm:grid-cols-2">
-              {projects.map((project, index) => (
-                <div
-                  key={index}
-                  className={`${project.featured ? 'sm:col-span-2' : ''} ${visibleSections.has('projects') ? 'stagger-child' : 'opacity-0'}`}
-                  style={{ animationDelay: visibleSections.has('projects') ? `${index * 80}ms` : undefined }}
+            <SectionHeader number="02" title="Projects" visible={visibleSections.has('projects')} />
+
+            {/* Tag filter */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button
+                type="button"
+                onClick={() => setActiveTag(null)}
+                className={`px-3 py-1 rounded-full font-mono text-[11px] border transition-all duration-150 ${activeTag === null ? 'bg-accent text-surface-bg border-accent' : 'border-surface-border text-ink-dim hover:border-accent/50 hover:text-ink-muted'}`}
+              >
+                all
+              </button>
+              {[...new Set(projects.flatMap(p => p.tags))].map(tag => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                  className={`px-3 py-1 rounded-full font-mono text-[11px] border transition-all duration-150 ${activeTag === tag ? 'bg-accent text-surface-bg border-accent' : 'border-surface-border text-ink-dim hover:border-accent/50 hover:text-ink-muted'}`}
                 >
-                  <ProjectCard
-                    project={project}
-                    roundedClass="rounded-lg"
-                    featured={project.featured}
-                  />
-                </div>
+                  {tag}
+                </button>
               ))}
             </div>
+
+            <div className="grid gap-4 w-full max-w-4xl grid-cols-1 sm:grid-cols-2">
+              {projects
+                .filter(p => activeTag === null || p.tags.includes(activeTag))
+                .map((project, index) => (
+                  <div
+                    key={project.title}
+                    className={`${project.featured ? 'sm:col-span-2' : ''} ${visibleSections.has('projects') ? 'anim-scale-up' : 'opacity-0'}`}
+                    style={{ animationDelay: visibleSections.has('projects') ? `${index * 90}ms` : undefined }}
+                  >
+                    <ProjectCard project={project} roundedClass="rounded-xl" featured={project.featured} />
+                  </div>
+                ))}
+            </div>
           </section>
+
+          {/* ── AT A GLANCE ── */}
           <section
-            id="contributions"
+            id="activity"
             ref={el => sectionRefs.current[2] = el}
             className="flex flex-col items-start w-full"
           >
-            <div className={`font-mono text-sm sm:text-base mb-2 text-ink`}>
-              <div className="flex items-baseline gap-2">
-                <span className="text-accent select-none">$</span>
-                <span>tail -f activity.log</span>
-                <span className="cursor-blink text-accent">▋</span>
+            <SectionHeader number="03" title="At a Glance" visible={visibleSections.has('activity')} />
+
+            <div className="bento-grid w-full max-w-4xl">
+              <div
+                className={`bento-map h-[260px] sm:h-auto ${visibleSections.has('activity') ? 'anim-float-up' : 'opacity-0'}`}
+                style={{ animationDelay: '0ms' }}
+              >
+                <MapCard isDark={isDark} />
               </div>
-              <div className={`pl-4 mt-0.5 text-ink-muted`}>→ activity</div>
-            </div>
-            <div className={`w-full border-t mb-8 border-surface-border`} style={{ maxWidth: '32rem' }} />
-            <div
-              className={`w-full max-w-xl ${visibleSections.has('contributions') ? 'stagger-child' : 'opacity-0'}`}
-            >
-              <RecentCommitsCard theme={theme} roundedClass="rounded-lg" />
+              <div
+                className={`bento-count h-[200px] sm:h-auto ${visibleSections.has('activity') ? 'anim-float-up' : 'opacity-0'}`}
+                style={{ animationDelay: '80ms' }}
+              >
+                <ClickCounter />
+              </div>
+              <div
+                className={`bento-stack h-[300px] sm:h-auto ${visibleSections.has('activity') ? 'anim-float-up' : 'opacity-0'}`}
+                style={{ animationDelay: '160ms' }}
+              >
+                <StackCard />
+              </div>
+              <div
+                className={`bento-github ${visibleSections.has('activity') ? 'anim-float-up' : 'opacity-0'}`}
+                style={{ animationDelay: '240ms' }}
+              >
+                <ContributionHeatmap />
+              </div>
             </div>
           </section>
+
         </main>
+
+        {/* ── CONTACT ── */}
         <footer
           id="contact"
-          className="w-full py-16 mt-8 scroll-mt-[5rem]"
+          ref={el => sectionRefs.current[3] = el}
+          className="w-full py-16 mt-12 border-t border-surface-border scroll-mt-[5rem]"
         >
-          <div className="w-full max-w-md mx-auto">
-            <div className="font-mono text-sm sm:text-base mb-2 text-ink">
-              <div className="flex items-baseline gap-2">
-                <span className="text-accent select-none">&gt;</span>
-                <span>contact</span>
-                <span className="cursor-blink text-accent">▋</span>
-              </div>
-              <div className="pl-4 mt-0.5 text-ink-muted">→ contact</div>
-            </div>
-            <div className="w-full border-t mb-8 border-surface-border" style={{ maxWidth: '32rem' }} />
-            <div className="bg-surface-bg border border-white/[0.03] rounded-lg p-6">
-              <p className="text-sm text-ink-muted mb-6 leading-relaxed">
-                Open to Summer 2026 SWE internships — full-stack, backend, or automation.
-                <br />Feel free to reach out through any of the channels below.
+          <SectionHeader number="04" title="Contact" visible={visibleSections.has('contact')} />
+
+          <div className={`text-center mb-10 ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '80ms' }}>
+            <h2 className="font-serif text-4xl sm:text-5xl text-ink leading-tight mb-4">
+              Let's build something <span className="italic text-accent">together.</span>
+            </h2>
+            <p className="text-ink-muted text-sm max-w-[50ch] mx-auto leading-relaxed">
+              Looking for Summer 2026 SWE internships — full-stack, backend, or automation.
+            </p>
+          </div>
+
+          <div className={`flex flex-wrap gap-3 justify-center mb-12 ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '160ms' }}>
+            <a
+              href="mailto:umolina2005@gmail.com"
+              onClick={handleCopyEmail}
+              title="Click to copy"
+              className="group flex items-center gap-3 px-5 py-3 rounded-xl border border-surface-border hover:border-accent hover:bg-accent/5 transition-all duration-200"
+            >
+              <FaEnvelope size={14} className="text-ink-dim group-hover:text-accent transition-colors" />
+              <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">umolina2005@gmail.com</span>
+            </a>
+            <a
+              href="https://github.com/UlissesMolina"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 px-5 py-3 rounded-xl border border-surface-border hover:border-accent hover:bg-accent/5 transition-all duration-200"
+            >
+              <FaGithub size={14} className="text-ink-dim group-hover:text-accent transition-colors" />
+              <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">github.com/UlissesMolina</span>
+            </a>
+            <a
+              href="https://www.linkedin.com/in/ulissesmolina"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 px-5 py-3 rounded-xl border border-surface-border hover:border-accent hover:bg-accent/5 transition-all duration-200"
+            >
+              <FaLinkedin size={14} className="text-ink-dim group-hover:text-accent transition-colors" />
+              <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">linkedin.com/in/ulissesmolina</span>
+            </a>
+            <a
+              href="/uliResume.pdf"
+              download="uliResume.pdf"
+              className="group flex items-center gap-3 px-5 py-3 rounded-xl border border-surface-border hover:border-accent hover:bg-accent/5 transition-all duration-200"
+            >
+              <FaFileAlt size={14} className="text-ink-dim group-hover:text-accent transition-colors" />
+              <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">Resume (PDF)</span>
+            </a>
+          </div>
+
+          <div className={`text-center flex flex-col gap-1.5 ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '240ms' }}>
+            <p className="font-mono text-[11px] text-ink-dim">
+              Built with React · Vite · Tailwind
+            </p>
+            {clockTime && (
+              <p className="font-mono text-[11px] text-ink-dim tabular-nums">
+                {clockTime} — {Intl.DateTimeFormat().resolvedOptions().timeZone}
               </p>
-              <div className="flex flex-col gap-2">
-                <a
-                  href="mailto:umolina2005@gmail.com"
-                  onClick={handleCopyEmail}
-                  title="Click to copy"
-                  className="group flex items-center gap-3 px-3 py-2.5 rounded-md border border-transparent hover:border-accent/20 hover:bg-surface-border/30 transition-all duration-200"
-                >
-                  <FaEnvelope size={14} className="text-ink-muted group-hover:text-accent shrink-0 transition-colors" />
-                  <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">umolina2005@gmail.com</span>
-                  <span className="ml-auto text-[10px] font-mono text-ink-dim opacity-0 group-hover:opacity-100 transition-opacity">click to copy</span>
-                </a>
-                <a
-                  href="https://github.com/UlissesMolina"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-3 px-3 py-2.5 rounded-md border border-transparent hover:border-accent/20 hover:bg-surface-border/30 transition-all duration-200"
-                >
-                  <FaGithub size={14} className="text-ink-muted group-hover:text-accent shrink-0 transition-colors" />
-                  <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">github.com/UlissesMolina</span>
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/ulissesmolina"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-3 px-3 py-2.5 rounded-md border border-transparent hover:border-accent/20 hover:bg-surface-border/30 transition-all duration-200"
-                >
-                  <FaLinkedin size={14} className="text-ink-muted group-hover:text-accent shrink-0 transition-colors" />
-                  <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">linkedin.com/in/ulissesmolina</span>
-                </a>
-                <a
-                  href="/uliResume.pdf"
-                  download="uliResume.pdf"
-                  className="group flex items-center gap-3 px-3 py-2.5 rounded-md border border-transparent hover:border-accent/20 hover:bg-surface-border/30 transition-all duration-200"
-                >
-                  <FaFileAlt size={14} className="text-ink-muted group-hover:text-accent shrink-0 transition-colors" />
-                  <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">Resume (PDF)</span>
-                  <span className="ml-auto text-[10px] font-mono text-ink-dim opacity-0 group-hover:opacity-100 transition-opacity">download</span>
-                </a>
-              </div>
-            </div>
-            <div className="mt-8 flex justify-center">
-              <span className="text-[10px] font-mono tabular-nums transition-colors text-ink-dim" title="How long you've been on this page">
-                Time on page: {formatSessionTime(time.getTime() - sessionStartRef.current)} · {time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })}
-              </span>
-            </div>
+            )}
           </div>
         </footer>
       </div>
 
       {toast && (
-        <div className="toast-enter fixed bottom-6 right-6 z-50 font-mono text-xs px-3 py-2 rounded border bg-surface-card border-accent/40 text-accent shadow-lg pointer-events-none">
+        <div className="toast-enter fixed bottom-6 right-6 z-50 font-mono text-xs px-3 py-2 rounded-lg border bg-surface-card border-surface-border text-ink shadow-lg pointer-events-none">
           {toast}
         </div>
       )}
-
-      {terminalOverlayOpen && (
-        <div
-          className={`terminal-overlay ${terminalOverlayClosing ? 'terminal-overlay--closing' : ''}`}
-          aria-modal="true"
-          role="dialog"
-          aria-label="Terminal overlay"
-          onClick={closeTerminalOverlay}
-        >
-          <div
-            className="terminal-overlay__panel bg-surface-bg border border-white/[0.08]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-end gap-2 px-4 py-2 border-b border-white/[0.06] bg-surface-bg/80">
-              <button
-                type="button"
-                onClick={closeTerminalOverlay}
-                className="font-mono text-xs px-3 py-1.5 rounded border border-surface-border text-ink-muted hover:border-accent/50 hover:text-accent transition-colors"
-                aria-label="Close terminal"
-              >
-                Close
-              </button>
-            </div>
-            <div className="flex-1 min-h-0 overflow-hidden" style={{ minHeight: '400px' }}>
-              <Terminal
-                onNavigateToSection={(id) => {
-                  scrollToSection(id);
-                  closeTerminalOverlay();
-                }}
-                konamiMessage={konamiMessage}
-                onKonamiShown={() => setKonamiMessage(null)}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-  )
+  );
 }
 
-export default App
-
+export default App;
