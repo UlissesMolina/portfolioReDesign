@@ -283,7 +283,7 @@ public ResponseEntity<Expense> approve(
               {'Ulisses Molina'.split('').map((char, i) => (
                 <span
                   key={i}
-                  className="inline-block hover:text-accent transition-colors duration-150"
+                  className="inline-block hover:text-accent hover:-translate-y-2 transition-all duration-150 ease-out"
                   style={{ whiteSpace: char === ' ' ? 'pre' : undefined }}
                 >
                   {char}

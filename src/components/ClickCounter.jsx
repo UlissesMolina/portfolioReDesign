@@ -54,7 +54,9 @@ export default function ClickCounter() {
       return;
     }
     import('firebase/database').then(({ ref, runTransaction }) => {
-      runTransaction(ref(db, COUNTER_PATH), (current) => (current ?? 0) + 1);
+      runTransaction(ref(db, COUNTER_PATH), (current) => (current ?? 0) + 1)
+        .then(() => console.log('Firebase write OK'))
+        .catch((err) => console.error('Firebase write FAILED:', err));
     });
   }, []);
 
