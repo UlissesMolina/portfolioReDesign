@@ -11,10 +11,39 @@ import SideBars from './components/SideBars';
 import CursorTrail from './components/CursorTrail';
 import ParticleConstellation from './components/ParticleConstellation';
 
+function ScrambleNumber({ number }) {
+  const [display, setDisplay] = useState(number);
+  const intervalRef = useRef(null);
+  const handleMouseEnter = () => {
+    let iterations = 0;
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setDisplay(
+        number.split('').map((char, i) =>
+          i < iterations ? char : String(Math.floor(Math.random() * 10))
+        ).join('')
+      );
+      iterations++;
+      if (iterations > number.length) {
+        clearInterval(intervalRef.current);
+        setDisplay(number);
+      }
+    }, 120);
+  };
+  return (
+    <span
+      className="font-mono text-sm text-accent cursor-default select-none"
+      onMouseEnter={handleMouseEnter}
+    >
+      {display}
+    </span>
+  );
+}
+
 function SectionHeader({ number, title, visible }) {
   return (
     <div className={`flex items-center gap-4 mb-8 w-full ${visible ? 'anim-float-up' : 'opacity-0'}`}>
-      <span className="font-mono text-sm text-accent">{number}</span>
+      <ScrambleNumber number={number} />
       <h2 className="font-serif text-2xl sm:text-3xl text-ink whitespace-nowrap">{title}</h2>
       <div className="flex-1 h-px bg-surface-border" />
     </div>
@@ -268,11 +297,19 @@ public ResponseEntity<Expense> approve(
 
           <div className="relative z-10 max-w-3xl">
             <p
-              className="slide-up flex items-center gap-3 font-mono text-xs text-accent tracking-widest uppercase mb-5"
+              className="slide-up group flex items-center gap-3 font-mono text-xs text-accent tracking-widest uppercase mb-5"
               style={{ animationDelay: '0.1s' }}
             >
-              <span className="h-px w-8 bg-accent shrink-0" />
-              Software Engineer
+              <span className="h-px w-8 bg-accent shrink-0 group-hover:w-14 transition-all duration-300" />
+              {'Software Engineer'.split('').map((char, i) => (
+                <span
+                  key={i}
+                  className="inline-block hover:text-ink hover:-translate-y-1 transition-all duration-150 ease-out"
+                  style={{ whiteSpace: char === ' ' ? 'pre' : undefined }}
+                >
+                  {char}
+                </span>
+              ))}
             </p>
 
             <h1
@@ -357,7 +394,7 @@ public ResponseEntity<Expense> approve(
                     {exp.tech.map((t) => (
                       <span
                         key={t}
-                        className="font-mono text-[10px] px-2 py-0.5 rounded-md border border-surface-border text-ink-dim group-hover:border-accent/30 group-hover:text-accent/70 transition-colors duration-200"
+                        className="inline-block font-mono text-[10px] px-2 py-0.5 rounded-md border border-surface-border text-ink-dim group-hover:border-accent/30 group-hover:text-accent/70 hover:border-accent hover:text-accent hover:scale-110 hover:-translate-y-0.5 transition-all duration-150 cursor-default"
                       >
                         {t}
                       </span>
@@ -460,7 +497,9 @@ public ResponseEntity<Expense> approve(
 
           <div className={`text-center mb-10 ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '80ms' }}>
             <h2 className="font-serif text-4xl sm:text-5xl text-ink leading-tight mb-4">
-              Let's build something <span className="italic text-accent">together.</span>
+              Let's build something <span className="italic text-accent">{'together.'.split('').map((char, i) => (
+                <span key={i} className="inline-block hover:text-ink hover:-translate-y-2 transition-all duration-150 ease-out">{char}</span>
+              ))}</span>
             </h2>
             <p className="text-ink-muted text-sm max-w-[50ch] mx-auto leading-relaxed">
               Looking for Summer 2026 SWE internships — full-stack, backend, or automation.

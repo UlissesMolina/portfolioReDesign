@@ -3,6 +3,24 @@ import { db } from '../lib/firebase';
 
 const STORAGE_KEY = 'portfolio-click-count';
 const COUNTER_PATH = 'clickCount';
+const CLICKS_PATH = 'clicks';
+
+function parseDevice() {
+  const ua = navigator.userAgent;
+  const mobile = /Mobi|Android|iPhone|iPad/i.test(ua);
+  const browser = /Edg/.test(ua) ? 'Edge' : /Chrome/.test(ua) ? 'Chrome' : /Firefox/.test(ua) ? 'Firefox' : /Safari/.test(ua) ? 'Safari' : 'Other';
+  return `${mobile ? 'Mobile' : 'Desktop'} / ${browser}`;
+}
+
+async function fetchGeo() {
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    return { country: data.country_name ?? '?', city: data.city ?? '?' };
+  } catch {
+    return { country: '?', city: '?' };
+  }
+}
 
 function getLocalCount() {
   try {
@@ -17,6 +35,7 @@ export default function ClickCounter() {
   const [punching, setPunching] = useState(false);
   const [plusOnes, setPlusOnes] = useState([]);
   const punchTimer = useRef(null);
+  const geoCache = useRef(null);
 
   useEffect(() => {
     if (!db) { setCount(getLocalCount()); return; }
@@ -53,10 +72,18 @@ export default function ClickCounter() {
       });
       return;
     }
-    import('firebase/database').then(({ ref, runTransaction }) => {
+    import('firebase/database').then(async ({ ref, runTransaction, push }) => {
       runTransaction(ref(db, COUNTER_PATH), (current) => (current ?? 0) + 1)
-        .then(() => console.log('Firebase write OK'))
         .catch((err) => console.error('Firebase write FAILED:', err));
+
+      if (!geoCache.current) geoCache.current = await fetchGeo();
+      const { country, city } = geoCache.current;
+      push(ref(db, CLICKS_PATH), {
+        ts: Date.now(),
+        country,
+        city,
+        device: parseDevice(),
+      }).catch(() => {});
     });
   }, []);
 
