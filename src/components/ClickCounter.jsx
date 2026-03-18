@@ -2,8 +2,18 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { db } from '../lib/firebase';
 
 const STORAGE_KEY = 'portfolio-click-count';
+const VISITOR_KEY = 'portfolio-visitor-id';
 const COUNTER_PATH = 'clickCount';
 const CLICKS_PATH = 'clicks';
+
+function getVisitorId() {
+  let id = localStorage.getItem(VISITOR_KEY);
+  if (!id) {
+    id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem(VISITOR_KEY, id);
+  }
+  return id;
+}
 
 function parseDevice() {
   const ua = navigator.userAgent;
@@ -72,18 +82,21 @@ export default function ClickCounter() {
       });
       return;
     }
-    import('firebase/database').then(async ({ ref, runTransaction, push }) => {
+    import('firebase/database').then(async ({ ref, runTransaction }) => {
       runTransaction(ref(db, COUNTER_PATH), (current) => (current ?? 0) + 1)
         .catch((err) => console.error('Firebase write FAILED:', err));
 
       if (!geoCache.current) geoCache.current = await fetchGeo();
       const { country, city } = geoCache.current;
-      push(ref(db, CLICKS_PATH), {
-        ts: Date.now(),
+      const visitorId = getVisitorId();
+      runTransaction(ref(db, `${CLICKS_PATH}/${visitorId}`), (current) => ({
         country,
         city,
         device: parseDevice(),
-      }).catch(() => {});
+        firstSeen: current?.firstSeen ?? Date.now(),
+        lastSeen: Date.now(),
+        count: (current?.count ?? 0) + 1,
+      })).catch(() => {});
     });
   }, []);
 
