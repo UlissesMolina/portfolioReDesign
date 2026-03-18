@@ -8,11 +8,13 @@ const CLICKS_PATH = 'clicks';
 
 function getVisitorId() {
   let id = localStorage.getItem(VISITOR_KEY);
+  let isNew = false;
   if (!id) {
     id = Math.random().toString(36).slice(2) + Date.now().toString(36);
     localStorage.setItem(VISITOR_KEY, id);
+    isNew = true;
   }
-  return id;
+  return { id, isNew };
 }
 
 function parseDevice() {
@@ -82,21 +84,23 @@ export default function ClickCounter() {
       });
       return;
     }
-    import('firebase/database').then(async ({ ref, runTransaction }) => {
+    import('firebase/database').then(async ({ ref, runTransaction, update, increment }) => {
       runTransaction(ref(db, COUNTER_PATH), (current) => (current ?? 0) + 1)
         .catch((err) => console.error('Firebase write FAILED:', err));
 
       if (!geoCache.current) geoCache.current = await fetchGeo();
       const { country, city } = geoCache.current;
-      const visitorId = getVisitorId();
-      runTransaction(ref(db, `${CLICKS_PATH}/${visitorId}`), (current) => ({
+      const { id: visitorId, isNew } = getVisitorId();
+      const payload = {
         country,
         city,
         device: parseDevice(),
-        firstSeen: current?.firstSeen ?? Date.now(),
         lastSeen: Date.now(),
-        count: (current?.count ?? 0) + 1,
-      })).catch(() => {});
+        count: increment(1),
+      };
+      if (isNew) payload.firstSeen = Date.now();
+      update(ref(db, `${CLICKS_PATH}/${visitorId}`), payload)
+        .catch((err) => console.error('clicks write failed:', err));
     });
   }, []);
 
