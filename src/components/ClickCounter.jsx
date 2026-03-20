@@ -111,7 +111,7 @@ export default function ClickCounter() {
       type="button"
       onClick={handleClick}
       aria-label="Click to increment"
-      className="font-sans relative w-full h-full rounded-xl border border-surface-border bg-surface-card overflow-hidden flex flex-col items-center justify-center cursor-pointer select-none group"
+      className="font-sans relative w-full h-full rounded-xl border border-surface-border bg-surface-card overflow-hidden flex flex-col items-center justify-center cursor-pointer select-none group focus:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
     >
       {/* +1 floaters */}
       {plusOnes.map((p) => (
@@ -133,11 +133,11 @@ export default function ClickCounter() {
         {count}
       </span>
 
-      {/* Label */}
-      <p className="text-xs text-ink-dim mt-3 tracking-wide group-hover:text-accent transition-colors duration-200">
+      {/* Label — text-ink-muted for WCAG AA contrast in light/dark mode */}
+      <p className="text-xs text-ink-muted mt-3 tracking-wide group-hover:text-accent transition-colors duration-200">
         click me
       </p>
-      <p className="text-[10px] text-ink-dim/50 mt-1">
+      <p className="text-[10px] text-ink-muted mt-1">
         {db ? 'from everyone who visited' : 'and counting'}
       </p>
     </button>
