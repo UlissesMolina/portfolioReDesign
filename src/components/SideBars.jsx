@@ -62,16 +62,6 @@ export default function SideBars({ isDark = true, onToggleDark }) {
         <div className="w-px h-24 mt-1 bg-gradient-to-b from-surface-border to-transparent" />
       </div>
 
-      {/* Right bar */}
-      <div className={`${baseBar} right-8 2xl:right-12`}>
-        <span
-          className="text-[11px] font-mono text-ink-dim tracking-[0.2em] select-none"
-          style={{ writingMode: 'vertical-rl' }}
-        >
-          scroll
-        </span>
-        <div className="w-px h-24 mt-2 bg-gradient-to-b from-surface-border to-transparent" />
-      </div>
     </>
   );
 }

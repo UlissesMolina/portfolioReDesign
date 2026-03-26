@@ -100,7 +100,7 @@ export default function ProjectCard({ project, roundedClass = 'rounded-lg' }) {
             <img
               src={project.image}
               alt={`${project.title} screenshot`}
-              className="w-full h-[180px] object-cover object-top"
+              className="w-full aspect-video object-cover object-top"
             />
           </div>
         )}

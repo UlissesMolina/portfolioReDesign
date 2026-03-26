@@ -3,10 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import { FaEnvelope, FaGithub, FaLinkedin, FaFileAlt } from 'react-icons/fa';
 import NavBar from './components/NavBar';
 import ProjectCard from './components/ProjectCard';
-import ContributionHeatmap from './components/ContributionHeatmap';
-import MapCard from './components/MapCard';
-import ClickCounter from './components/ClickCounter';
-import StackCard from './components/StackCard';
 import SideBars from './components/SideBars';
 
 function SectionHeader({ title, visible }) {
@@ -135,13 +131,13 @@ function App() {
   const experiences = [
     {
       company: 'Room2Room Movers',
-      title: 'Part-Time Software Engineering Intern',
+      title: 'Software Engineering Intern',
       period: 'January 2026 – Present',
       tech: ['React', 'TypeScript', 'Firebase', 'Jira'],
     },
     {
       company: 'OCV, LLC',
-      title: 'Part-Time Software Engineering Intern',
+      title: 'Software Engineering Intern',
       period: 'September 2025 – Present',
       tech: ['JSON', 'iOS', 'Android', 'QC'],
     },
@@ -303,50 +299,13 @@ function App() {
               ))}
             </div>
           </section>
-
-          {/* ── AT A GLANCE ── */}
-          <section
-            id="activity"
-            ref={el => sectionRefs.current[2] = el}
-            className="flex flex-col items-start w-full"
-          >
-            <SectionHeader title="At a Glance" visible={visibleSections.has('activity')} />
-
-            <div className="bento-grid w-full max-w-4xl">
-              <div
-                className={`bento-map h-[260px] sm:h-auto ${visibleSections.has('activity') ? 'anim-float-up' : 'opacity-0'}`}
-                style={{ animationDelay: '0ms' }}
-              >
-                <MapCard isDark={isDark} />
-              </div>
-              <div
-                className={`bento-count h-[200px] sm:h-auto ${visibleSections.has('activity') ? 'anim-float-up' : 'opacity-0'}`}
-                style={{ animationDelay: '80ms' }}
-              >
-                <ClickCounter />
-              </div>
-              <div
-                className={`bento-stack h-[300px] sm:h-auto ${visibleSections.has('activity') ? 'anim-float-up' : 'opacity-0'}`}
-                style={{ animationDelay: '160ms' }}
-              >
-                <StackCard />
-              </div>
-              <div
-                className={`bento-github ${visibleSections.has('activity') ? 'anim-float-up' : 'opacity-0'}`}
-                style={{ animationDelay: '240ms' }}
-              >
-                <ContributionHeatmap />
-              </div>
-            </div>
-          </section>
-
         </main>
 
         {/* ── CONTACT ── */}
         <footer
           id="contact"
           ref={el => sectionRefs.current[3] = el}
-          className="w-full py-16 mt-12 border-t border-surface-border scroll-mt-[5rem]"
+          className="w-full py-16 mt-12 scroll-mt-[5rem]"
         >
           <SectionHeader title="Contact" visible={visibleSections.has('contact')} />
 
@@ -397,16 +356,13 @@ function App() {
             </a>
           </div>
 
-          <div className={`text-center flex flex-col gap-1.5 ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '240ms' }}>
-            <p className="font-mono text-[11px] text-ink-dim">
-              Built with React · Vite · Tailwind
-            </p>
-            {clockTime && (
+          {clockTime && (
+            <div className={`text-center ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '240ms' }}>
               <p className="font-mono text-[11px] text-ink-dim tabular-nums">
                 {clockTime} — {Intl.DateTimeFormat().resolvedOptions().timeZone}
               </p>
-            )}
-          </div>
+            </div>
+          )}
         </footer>
       </div>
 
