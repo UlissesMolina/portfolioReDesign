@@ -50,6 +50,26 @@ function SectionHeader({ number, title, visible }) {
   );
 }
 
+/** sm: 2-col grid — index of an unpaired 1-col card on the last row, or -1 */
+function getProjectsGridOrphanIndex(list) {
+  let col = 0;
+  let orphanIdx = -1;
+  for (let i = 0; i < list.length; i++) {
+    const p = list[i];
+    if (p.featured) {
+      col = 0;
+      orphanIdx = -1;
+    } else if (col === 0) {
+      orphanIdx = i;
+      col = 1;
+    } else {
+      orphanIdx = -1;
+      col = 0;
+    }
+  }
+  return orphanIdx;
+}
+
 function App() {
   const sectionRefs = useRef([]);
   const [activeSection, setActiveSection] = useState('');
@@ -266,7 +286,28 @@ public ResponseEntity<Expense> approve(
     service.approve(id));
 }`,
     },
+    {
+      title: 'ChessBot',
+      description: 'C++ chess engine and bot built with CMake — move generation, board representation, and search/evaluation in a modular layout (src / include).',
+      tags: ['C++', 'CMake'],
+      githubUrl: 'https://github.com/UlissesMolina/ChessBot',
+      demoUrl: null,
+      featured: false,
+      type: 'Desktop / Engine',
+      snippetFile: 'Board.cpp',
+      snippet: `int evaluate(const Board& b) {
+  int score = 0;
+  for (int sq = 0; sq < 64; sq++) {
+    Piece p = b.pieceAt(sq);
+    score += materialValue(p);
+  }
+  return b.sideIsWhite() ? score : -score;
+}`,
+    },
   ];
+
+  const visibleProjects = projects.filter((p) => activeTag === null || p.tags.includes(activeTag));
+  const projectsOrphanIndex = getProjectsGridOrphanIndex(visibleProjects);
 
   return (
     <div className="relative min-h-screen font-sans transition-colors duration-300 bg-surface-grid">
@@ -435,17 +476,18 @@ public ResponseEntity<Expense> approve(
             </div>
 
             <div className="grid gap-4 w-full max-w-4xl grid-cols-1 sm:grid-cols-2">
-              {projects
-                .filter(p => activeTag === null || p.tags.includes(activeTag))
-                .map((project, index) => (
+              {visibleProjects.map((project, index) => {
+                const isOrphan = index === projectsOrphanIndex;
+                return (
                   <div
                     key={project.title}
-                    className={`${project.featured ? 'sm:col-span-2' : ''} ${visibleSections.has('projects') ? 'anim-scale-up' : 'opacity-0'}`}
+                    className={`${project.featured || isOrphan ? 'sm:col-span-2' : ''} ${visibleSections.has('projects') ? 'anim-scale-up' : 'opacity-0'}`}
                     style={{ animationDelay: visibleSections.has('projects') ? `${index * 90}ms` : undefined }}
                   >
                     <ProjectCard project={project} roundedClass="rounded-xl" featured={project.featured} />
                   </div>
-                ))}
+                );
+              })}
             </div>
           </section>
 

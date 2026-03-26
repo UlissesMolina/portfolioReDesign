@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 import { FaPython, FaReact } from 'react-icons/fa';
-import { SiTypescript, SiSpringboot, SiPostgresql, SiDocker, SiNodedotjs } from 'react-icons/si';
+import { SiTypescript, SiSpringboot, SiPostgresql, SiDocker, SiNodedotjs, SiCplusplus, SiCmake } from 'react-icons/si';
 
 const TAG_COLORS = {
   React:            'text-sky-400 border-sky-400/30',
@@ -20,6 +20,8 @@ const TAG_COLORS = {
   'Web Automation': 'text-amber-400 border-amber-400/30',
   Clerk:            'text-pink-400 border-pink-400/30',
   OpenAI:           'text-pink-400 border-pink-400/30',
+  'C++':            'text-indigo-400 border-indigo-400/30',
+  CMake:            'text-cyan-400 border-cyan-400/30',
 };
 const TAG_DEFAULT = 'text-ink-dim border-surface-border';
 
@@ -32,6 +34,8 @@ const TAG_ICONS = {
   PostgreSQL: SiPostgresql,
   Docker: SiDocker,
   'Node.js': SiNodedotjs,
+  'C++': SiCplusplus,
+  CMake: SiCmake,
 };
 
 function CodeBar({ filename }) {
@@ -58,6 +62,8 @@ const KEYWORDS = new Set([
   'def', 'True', 'False', 'None', 'and', 'or', 'not',
   // Java
   'public', 'private', 'protected', 'static', 'final', 'void',
+  // C++
+  'struct', 'namespace', 'bool', 'int', 'virtual', 'explicit',
 ]);
 
 const TOKEN_RE = new RegExp(

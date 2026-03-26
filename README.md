@@ -10,7 +10,7 @@ A terminal-style portfolio built with React and Vite.
 - **Wordle easter egg** — Type `wordle`, `wordplay`, or `puzzle` to play a 5-letter game in the terminal
 - **Konami code** — ↑↑↓↓←→←→ B A for a small surprise
 - **Work timeline** with expandable bullets and theme-colored connector line
-- **Projects** with code snippets, tags, and links
+- **Projects** — Trackr, Tiger Scheduler, Clarity Finance, Enterprise Expense API, ChessBot — with code snippets, tags, and links
 - **Recent activity** — GitHub commits and repo language bar (theme-aware)
 - **Session timer** in the footer (replaces static uptime)
 - **Loading bar** when navigating between sections
