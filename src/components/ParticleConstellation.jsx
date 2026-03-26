@@ -13,6 +13,8 @@ function parseAccent() {
 }
 
 export default function ParticleConstellation() {
+  const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return null;
   const canvasRef = useRef(null);
 
   useEffect(() => {

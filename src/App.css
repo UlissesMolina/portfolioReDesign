@@ -178,29 +178,6 @@ html.light .bg-surface-grid {
   z-index: 50;
 }
 
-/* ── Name glitch easter egg ── */
-@keyframes name-glitch {
-  0%   { text-shadow: none; transform: none; }
-  10%  { text-shadow: 3px 0 var(--accent), -3px 0 #5dadec; transform: skewX(-4deg); }
-  20%  { text-shadow: -3px 0 var(--accent), 3px 0 #bd93f9; transform: skewX(4deg); }
-  30%  { text-shadow: 3px 2px var(--accent); transform: none; color: var(--accent); }
-  45%  { text-shadow: -2px -2px #5dadec; transform: skewX(-2deg); color: inherit; }
-  55%  { text-shadow: none; transform: none; }
-  65%  { text-shadow: 2px 0 var(--accent); transform: skewX(2deg); color: var(--accent-light); }
-  75%  { text-shadow: none; transform: none; color: inherit; }
-  85%  { text-shadow: -2px 0 #bd93f9; transform: skewX(-1deg); }
-  100% { text-shadow: none; transform: none; color: inherit; }
-}
-.name-glitch {
-  animation: name-glitch 0.75s ease-in-out forwards;
-  cursor: pointer;
-}
-
-/* ── Click spark animation ── */
-@keyframes click-spark {
-  0%   { opacity: 1; transform: translate(-50%, -50%) translate(0, 0) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.4); }
-}
 
 /* ── Selection ── */
 ::selection {

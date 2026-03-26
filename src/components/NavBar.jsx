@@ -102,16 +102,16 @@ export default function NavBar({ activeSection = '', onNavClick, customColor = '
             Resume
           </a>
           {onCustomColor && (
-            <label title="Accent color" className="cursor-pointer animate-nav-link-in" style={{ lineHeight: 0 }}>
+            <label title="Accent color" className="cursor-pointer animate-nav-link-in relative" style={{ lineHeight: 0 }}>
               <input
                 ref={desktopColorRef}
                 type="color"
                 defaultValue={customColor}
-                className="sr-only"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 aria-label="Accent color"
               />
               <span
-                className="block w-6 h-6 rounded-full border-2 border-surface-border hover:border-accent hover:scale-110 transition-all duration-200"
+                className="block w-7 h-7 rounded-lg border-2 border-surface-border hover:border-accent transition-all duration-200"
                 style={{ background: 'var(--accent)' }}
               />
             </label>
@@ -120,16 +120,16 @@ export default function NavBar({ activeSection = '', onNavClick, customColor = '
 
         <div className="flex md:hidden items-center gap-2">
           {onCustomColor && (
-            <label title="Accent color" className="cursor-pointer" style={{ lineHeight: 0 }}>
+            <label title="Accent color" className="cursor-pointer relative" style={{ lineHeight: 0 }}>
               <input
                 ref={mobileColorRef}
                 type="color"
                 defaultValue={customColor}
-                className="sr-only"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 aria-label="Accent color"
               />
               <span
-                className="block w-6 h-6 rounded-full border-2 border-surface-border"
+                className="block w-7 h-7 rounded-lg border-2 border-surface-border"
                 style={{ background: 'var(--accent)' }}
               />
             </label>

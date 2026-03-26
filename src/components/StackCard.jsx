@@ -18,15 +18,15 @@ const STACK = [
 
 export default function StackCard() {
   return (
-    <div className="font-sans w-full h-full rounded-xl border border-surface-border bg-surface-card overflow-hidden flex flex-col p-6">
-      <p className="text-[10px] font-semibold tracking-widest uppercase text-ink-dim mb-4">
+    <div className="font-sans w-full h-full rounded-xl border border-surface-border bg-surface-card overflow-hidden flex flex-col p-4">
+      <p className="text-[10px] font-semibold tracking-widest uppercase text-ink-dim mb-3">
         Stack
       </p>
-      <div className="grid grid-cols-3 gap-4 flex-1 content-start">
+      <div className="grid grid-cols-3 gap-2 flex-1 place-content-center">
         {STACK.map(({ icon: Icon, label, color }) => (
-          <div key={label} className="group/item flex flex-col items-center gap-1.5 rounded-lg p-1.5 cursor-default hover:bg-surface-border/50 transition-colors duration-150">
-            <Icon size={36} className={`${color} transition-transform duration-200 group-hover/item:scale-110`} />
-            <span className="text-xs font-mono text-ink-dim group-hover/item:text-ink-muted text-center leading-tight transition-colors duration-150">
+          <div key={label} className="flex flex-col items-center gap-1 py-1.5">
+            <Icon size={28} className={color} />
+            <span className="text-[10px] font-mono text-ink-dim text-center leading-tight">
               {label}
             </span>
           </div>

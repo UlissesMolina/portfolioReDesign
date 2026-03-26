@@ -8,66 +8,14 @@ import MapCard from './components/MapCard';
 import ClickCounter from './components/ClickCounter';
 import StackCard from './components/StackCard';
 import SideBars from './components/SideBars';
-import CursorTrail from './components/CursorTrail';
-import ParticleConstellation from './components/ParticleConstellation';
 
-function ScrambleNumber({ number }) {
-  const [display, setDisplay] = useState(number);
-  const intervalRef = useRef(null);
-  const handleMouseEnter = () => {
-    let iterations = 0;
-    clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
-      setDisplay(
-        number.split('').map((char, i) =>
-          i < iterations ? char : String(Math.floor(Math.random() * 10))
-        ).join('')
-      );
-      iterations++;
-      if (iterations > number.length) {
-        clearInterval(intervalRef.current);
-        setDisplay(number);
-      }
-    }, 120);
-  };
-  return (
-    <span
-      className="font-mono text-sm text-accent cursor-default select-none"
-      onMouseEnter={handleMouseEnter}
-    >
-      {display}
-    </span>
-  );
-}
-
-function SectionHeader({ number, title, visible }) {
+function SectionHeader({ title, visible }) {
   return (
     <div className={`flex items-center gap-4 mb-8 w-full ${visible ? 'anim-float-up' : 'opacity-0'}`}>
-      <ScrambleNumber number={number} />
       <h2 className="font-serif text-2xl sm:text-3xl text-ink whitespace-nowrap">{title}</h2>
       <div className="flex-1 h-px bg-surface-border" />
     </div>
   );
-}
-
-/** sm: 2-col grid — index of an unpaired 1-col card on the last row, or -1 */
-function getProjectsGridOrphanIndex(list) {
-  let col = 0;
-  let orphanIdx = -1;
-  for (let i = 0; i < list.length; i++) {
-    const p = list[i];
-    if (p.featured) {
-      col = 0;
-      orphanIdx = -1;
-    } else if (col === 0) {
-      orphanIdx = i;
-      col = 1;
-    } else {
-      orphanIdx = -1;
-      col = 0;
-    }
-  }
-  return orphanIdx;
 }
 
 function App() {
@@ -80,31 +28,11 @@ function App() {
   const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
   const [clockTime, setClockTime] = useState('');
-  const [nameGlitch, setNameGlitch] = useState(false);
-  const nameClickRef = useRef({ timestamps: [] });
-  const [activeTag, setActiveTag] = useState(null);
 
   const showToast = (msg) => {
     setToast(msg);
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     toastTimerRef.current = setTimeout(() => setToast(null), 2000);
-  };
-
-  const handleNameClick = () => {
-    const now = Date.now();
-    const ts = nameClickRef.current.timestamps;
-    ts.push(now);
-    const recent = ts.filter(t => now - t < 1800);
-    nameClickRef.current.timestamps = recent;
-    if (recent.length >= 7) {
-      nameClickRef.current.timestamps = [];
-      setNameGlitch(false);
-      requestAnimationFrame(() => {
-        setNameGlitch(true);
-        setTimeout(() => setNameGlitch(false), 800);
-      });
-      showToast('secret unlocked.');
-    }
   };
 
   const handleCopyEmail = (e) => {
@@ -222,96 +150,40 @@ function App() {
   const projects = [
     {
       title: 'Trackr',
-      description: 'Full-stack job application tracker with a Kanban board, analytics dashboard, and CSV bulk import. Uses OpenAI GPT-4o to generate personalized cover letters from resume data. Clerk auth, RESTful API, TanStack Query.',
+      description: 'Job tracker with Kanban board and GPT-4o cover letter generation.',
       tags: ['React', 'TypeScript', 'Node.js', 'OpenAI'],
       githubUrl: 'https://github.com/UlissesMolina/Trackr',
       demoUrl: 'https://usetrackr.netlify.app/',
-      featured: true,
-      type: 'Web App',
-      snippetFile: 'useJobs.ts',
-      snippet: `const { data: jobs } = useQuery({
-  queryKey: ['jobs', filters],
-  queryFn: () => api.getJobs(filters),
-  staleTime: 1000 * 60 * 5,
-});`,
+      image: '/trackr.png',
     },
-    {
-      title: 'Tiger Scheduler Course Auto-Register Tool',
-      description: 'Python automation that polls Auburn\'s TigerScheduler every 60 seconds, detects open seats, and auto-registers — handling login, course filtering, and retries.',
-      tags: ['Python', 'Selenium', 'Web Automation'],
-      githubUrl: 'https://github.com/UlissesMolina/Tiger-Scheduler-Course-Auto-Register-Tool',
-      demoUrl: null,
-      featured: false,
-      type: 'Automation',
-      snippetFile: 'scheduler.py',
-      snippet: `while True:
-    driver.get(SCHEDULE_URL)
-    seats = driver.find_element(By.ID, 'open_seats')
-    if seats.text != '0':
-        enroll(driver, course_id)
-        break
-    time.sleep(60)`,
-    },
-    {
+{
       title: 'Clarity Finance',
-      description: 'See your money clearly. Track your income, expenses, and savings in one place.',
+      description: 'Track income, expenses, and savings in one place.',
       tags: ['React', 'TypeScript', 'CSS'],
       githubUrl: 'https://github.com/UlissesMolina/FinanceDashBoard',
       demoUrl: 'https://clarityfi.netlify.app/',
-      featured: false,
-      type: 'Web App',
-      snippetFile: 'useSummary.ts',
-      snippet: `const balance = transactions.reduce(
-  (sum, tx) =>
-    tx.type === 'income'
-      ? sum + tx.amount
-      : sum - tx.amount,
-  0
-);`,
+      image: '/clarity.png',
     },
     {
-      title: 'Enterprise Expense Management API',
-      description: 'Layered Spring Boot REST API with JWT auth and role-based access control via Spring Security. Features transactional approval workflows, audit logging, and PostgreSQL persistence. Integration-tested with Testcontainers and documented with OpenAPI/Swagger. Containerized with Docker and Docker Compose.',
+      title: 'Enterprise Expense API',
+      description: 'Expense approval workflow with JWT auth and role-based access.',
       tags: ['Java', 'Spring Boot', 'PostgreSQL', 'Docker'],
       githubUrl: 'https://github.com/UlissesMolina/Enterprise',
       demoUrl: null,
-      featured: true,
-      type: 'REST API',
-      snippetFile: 'ExpenseController.java',
-      snippet: `@PostMapping("/{id}/approve")
-@PreAuthorize("hasRole('MANAGER')")
-public ResponseEntity<Expense> approve(
-    @PathVariable Long id) {
-  return ResponseEntity.ok(
-    service.approve(id));
-}`,
     },
     {
-      title: 'ChessBot',
-      description: 'C++ chess engine and bot built with CMake — move generation, board representation, and search/evaluation in a modular layout (src / include).',
+      title: 'Audaz',
+      description: 'Chess engine with move generation, search, and eval.',
       tags: ['C++', 'CMake'],
       githubUrl: 'https://github.com/UlissesMolina/ChessBot',
       demoUrl: null,
-      featured: false,
-      type: 'Desktop / Engine',
-      snippetFile: 'Board.cpp',
-      snippet: `int evaluate(const Board& b) {
-  int score = 0;
-  for (int sq = 0; sq < 64; sq++) {
-    Piece p = b.pieceAt(sq);
-    score += materialValue(p);
-  }
-  return b.sideIsWhite() ? score : -score;
-}`,
+      image: '/audaz.png',
     },
   ];
 
-  const visibleProjects = projects.filter((p) => activeTag === null || p.tags.includes(activeTag));
-  const projectsOrphanIndex = getProjectsGridOrphanIndex(visibleProjects);
 
   return (
     <div className="relative min-h-screen font-sans transition-colors duration-300 bg-surface-grid">
-      <CursorTrail />
       {loadingBarActive && <div className="load-bar" aria-hidden="true" />}
       <SideBars isDark={isDark} onToggleDark={() => setIsDark(d => !d)} />
       <NavBar
@@ -327,46 +199,21 @@ public ResponseEntity<Expense> approve(
         <header id="about" className="relative pt-20 pb-14 scroll-mt-[5rem]">
           {/* Grid background */}
           <div className="hero-bg" aria-hidden="true" />
-          {/* Particle constellation */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute hidden sm:block"
-            style={{ width: '560px', height: '560px', right: '-50px', top: '50%', transform: 'translateY(-50%)', zIndex: 0 }}
-          >
-            <ParticleConstellation />
-          </div>
 
           <div className="relative z-10 max-w-3xl">
             <p
               className="slide-up group flex items-center gap-3 font-mono text-xs text-accent tracking-widest uppercase mb-5"
               style={{ animationDelay: '0.1s' }}
             >
-              <span className="h-px w-8 bg-accent shrink-0 group-hover:w-14 transition-all duration-300" />
-              {'Software Engineer'.split('').map((char, i) => (
-                <span
-                  key={i}
-                  className="inline-block hover:text-ink hover:-translate-y-1 transition-all duration-150 ease-out"
-                  style={{ whiteSpace: char === ' ' ? 'pre' : undefined }}
-                >
-                  {char}
-                </span>
-              ))}
+              <span className="h-px w-8 bg-accent shrink-0" />
+              Software Engineer
             </p>
 
             <h1
-              className={`slide-up font-serif text-ink leading-[1.0] tracking-tight mb-6 cursor-pointer select-none${nameGlitch ? ' name-glitch' : ''}`}
+              className="slide-up font-serif text-ink leading-[1.0] tracking-tight mb-6 select-none"
               style={{ fontSize: 'clamp(56px, 8vw, 110px)', animationDelay: '0.2s' }}
-              onClick={handleNameClick}
             >
-              {'Ulisses Molina'.split('').map((char, i) => (
-                <span
-                  key={i}
-                  className="inline-block hover:text-accent hover:-translate-y-2 transition-all duration-150 ease-out"
-                  style={{ whiteSpace: char === ' ' ? 'pre' : undefined }}
-                >
-                  {char}
-                </span>
-              ))}
+              Ulisses Molina
             </h1>
 
             <p
@@ -394,13 +241,6 @@ public ResponseEntity<Expense> approve(
               >
                 Resume
               </button>
-              <button
-                type="button"
-                onClick={() => scrollToSection('experience')}
-                className="px-5 py-2.5 rounded-lg border border-surface-border text-ink-muted hover:border-accent/50 hover:text-ink text-sm font-medium transition-all duration-200"
-              >
-                View Work
-              </button>
             </div>
           </div>
         </header>
@@ -413,7 +253,7 @@ public ResponseEntity<Expense> approve(
             ref={el => sectionRefs.current[0] = el}
             className="flex flex-col items-start w-full"
           >
-            <SectionHeader number="01" title="Experience" visible={visibleSections.has('experience')} />
+            <SectionHeader title="Experience" visible={visibleSections.has('experience')} />
             <div className="w-full max-w-3xl divide-y divide-surface-border">
               {experiences.map((exp, index) => (
                 <div
@@ -424,9 +264,6 @@ public ResponseEntity<Expense> approve(
                   <p className="font-mono text-xs text-ink-dim leading-relaxed pt-0.5">{exp.period}</p>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      {exp.period.includes('Present') && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden />
-                      )}
                       <span className="font-medium text-ink text-sm">{exp.title}</span>
                     </div>
                     <p className="text-sm font-medium" style={{ color: 'var(--accent)' }}>{exp.company}</p>
@@ -435,7 +272,7 @@ public ResponseEntity<Expense> approve(
                     {exp.tech.map((t) => (
                       <span
                         key={t}
-                        className="inline-block font-mono text-[10px] px-2 py-0.5 rounded-md border border-surface-border text-ink-dim group-hover:border-accent/30 group-hover:text-accent/70 hover:border-accent hover:text-accent hover:scale-110 hover:-translate-y-0.5 transition-all duration-150 cursor-default"
+                        className="inline-block font-mono text-[10px] px-2 py-0.5 rounded-md border border-surface-border text-ink-dim"
                       >
                         {t}
                       </span>
@@ -452,42 +289,18 @@ public ResponseEntity<Expense> approve(
             ref={el => sectionRefs.current[1] = el}
             className="flex flex-col items-start w-full"
           >
-            <SectionHeader number="02" title="Projects" visible={visibleSections.has('projects')} />
-
-            {/* Tag filter */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              <button
-                type="button"
-                onClick={() => setActiveTag(null)}
-                className={`px-3 py-1 rounded-full font-mono text-[11px] border transition-all duration-150 ${activeTag === null ? 'bg-accent text-surface-bg border-accent' : 'border-surface-border text-ink-dim hover:border-accent/50 hover:text-ink-muted'}`}
-              >
-                all
-              </button>
-              {[...new Set(projects.flatMap(p => p.tags))].map(tag => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                  className={`px-3 py-1 rounded-full font-mono text-[11px] border transition-all duration-150 ${activeTag === tag ? 'bg-accent text-surface-bg border-accent' : 'border-surface-border text-ink-dim hover:border-accent/50 hover:text-ink-muted'}`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
+            <SectionHeader title="Projects" visible={visibleSections.has('projects')} />
 
             <div className="grid gap-4 w-full max-w-4xl grid-cols-1 sm:grid-cols-2">
-              {visibleProjects.map((project, index) => {
-                const isOrphan = index === projectsOrphanIndex;
-                return (
-                  <div
-                    key={project.title}
-                    className={`${project.featured || isOrphan ? 'sm:col-span-2' : ''} ${visibleSections.has('projects') ? 'anim-scale-up' : 'opacity-0'}`}
-                    style={{ animationDelay: visibleSections.has('projects') ? `${index * 90}ms` : undefined }}
-                  >
-                    <ProjectCard project={project} roundedClass="rounded-xl" featured={project.featured} />
-                  </div>
-                );
-              })}
+              {projects.map((project, index) => (
+                <div
+                  key={project.title}
+                  className={`${projects.length % 2 !== 0 && index === projects.length - 1 ? 'sm:col-span-2 sm:max-w-[calc((100%-1rem)/2)] sm:mx-auto' : ''} ${visibleSections.has('projects') ? 'anim-scale-up' : 'opacity-0'}`}
+                  style={{ animationDelay: visibleSections.has('projects') ? `${index * 90}ms` : undefined }}
+                >
+                  <ProjectCard project={project} roundedClass="rounded-xl" />
+                </div>
+              ))}
             </div>
           </section>
 
@@ -497,7 +310,7 @@ public ResponseEntity<Expense> approve(
             ref={el => sectionRefs.current[2] = el}
             className="flex flex-col items-start w-full"
           >
-            <SectionHeader number="03" title="At a Glance" visible={visibleSections.has('activity')} />
+            <SectionHeader title="At a Glance" visible={visibleSections.has('activity')} />
 
             <div className="bento-grid w-full max-w-4xl">
               <div
@@ -535,13 +348,11 @@ public ResponseEntity<Expense> approve(
           ref={el => sectionRefs.current[3] = el}
           className="w-full py-16 mt-12 border-t border-surface-border scroll-mt-[5rem]"
         >
-          <SectionHeader number="04" title="Contact" visible={visibleSections.has('contact')} />
+          <SectionHeader title="Contact" visible={visibleSections.has('contact')} />
 
           <div className={`text-center mb-10 ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '80ms' }}>
             <h2 className="font-serif text-4xl sm:text-5xl text-ink leading-tight mb-4">
-              Let's build something <span className="italic text-accent">{'together.'.split('').map((char, i) => (
-                <span key={i} className="inline-block hover:text-ink hover:-translate-y-2 transition-all duration-150 ease-out">{char}</span>
-              ))}</span>
+              Get in <span className="italic text-accent">touch.</span>
             </h2>
             <p className="text-ink-muted text-sm max-w-[50ch] mx-auto leading-relaxed">
               Looking for Summer 2026 SWE internships — full-stack, backend, or automation.
