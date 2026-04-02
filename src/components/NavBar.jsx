@@ -25,7 +25,7 @@ function useColorInput(onCommit) {
   return ref;
 }
 
-export default function NavBar({ activeSection = '', onNavClick, customColor = '#c0392b', onCustomColor }) {
+export default function NavBar({ activeSection = '', onNavClick, customColor = '#c62d42', onCustomColor }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [navAnimated, setNavAnimated] = useState(false);
   const [scrolled, setScrolled] = useState(false);

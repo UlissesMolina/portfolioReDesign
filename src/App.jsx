@@ -1,7 +1,7 @@
 import './App.css'
 import { useEffect, useRef, useState } from 'react';
-import { FaEnvelope, FaGithub, FaLinkedin, FaFileAlt } from 'react-icons/fa';
-import NavBar from './components/NavBar';
+import { FaEnvelope, FaGithub, FaLinkedin, FaFileAlt, FaReact, FaPython, FaJava, FaDocker } from 'react-icons/fa';
+import { SiTypescript, SiSpringboot, SiNodedotjs, SiCplusplus, SiPostgresql, SiFirebase } from 'react-icons/si';
 import ProjectCard from './components/ProjectCard';
 import SideBars from './components/SideBars';
 
@@ -16,11 +16,10 @@ function SectionHeader({ title, visible }) {
 
 function App() {
   const sectionRefs = useRef([]);
-  const [activeSection, setActiveSection] = useState('');
   const [visibleSections, setVisibleSections] = useState(new Set());
   const [loadingBarActive, setLoadingBarActive] = useState(false);
   const [isDark, setIsDark] = useState(true);
-  const [customColor, setCustomColor] = useState('#c0392b');
+  const [customColor, setCustomColor] = useState('#c62d42');
   const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
   const [clockTime, setClockTime] = useState('');
@@ -46,33 +45,6 @@ function App() {
     const t = setTimeout(() => setLoadingBarActive(false), 500);
     return () => clearTimeout(t);
   }, [loadingBarActive]);
-
-  useEffect(() => {
-    const ids = ['about', 'experience', 'projects', 'contact'];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const id = entry.target.id;
-          if (ids.includes(id)) setActiveSection(id);
-        });
-      },
-      { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
-    );
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-    const onScroll = () => {
-      const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80;
-      if (nearBottom) setActiveSection('contact');
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('scroll', onScroll);
-    };
-  }, []);
 
   useEffect(() => () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); }, []);
 
@@ -181,13 +153,7 @@ function App() {
   return (
     <div className="relative min-h-screen font-sans transition-colors duration-300 bg-surface-grid">
       {loadingBarActive && <div className="load-bar" aria-hidden="true" />}
-      <SideBars isDark={isDark} onToggleDark={() => setIsDark(d => !d)} />
-      <NavBar
-        activeSection={activeSection}
-        onNavClick={scrollToSection}
-        customColor={customColor}
-        onCustomColor={setCustomColor}
-      />
+      <SideBars isDark={isDark} onToggleDark={() => setIsDark(d => !d)} customColor={customColor} onCustomColor={setCustomColor} />
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 z-10 flex flex-col">
 
@@ -279,6 +245,37 @@ function App() {
             </div>
           </section>
 
+          {/* ── TECH STACK ── */}
+          <section
+            id="stack"
+            ref={el => sectionRefs.current[4] = el}
+            className="flex flex-col items-start w-full"
+          >
+            <SectionHeader title="Stack" visible={visibleSections.has('stack')} />
+            <div className={`flex flex-wrap gap-2 ${visibleSections.has('stack') ? 'anim-float-up' : 'opacity-0'}`}>
+              {[
+                { name: 'React', icon: <FaReact size={14} /> },
+                { name: 'TypeScript', icon: <SiTypescript size={13} /> },
+                { name: 'Java', icon: <FaJava size={15} /> },
+                { name: 'Spring Boot', icon: <SiSpringboot size={14} /> },
+                { name: 'Node.js', icon: <SiNodedotjs size={13} /> },
+                { name: 'C++', icon: <SiCplusplus size={14} /> },
+                { name: 'Python', icon: <FaPython size={14} /> },
+                { name: 'PostgreSQL', icon: <SiPostgresql size={13} /> },
+                { name: 'Firebase', icon: <SiFirebase size={13} /> },
+                { name: 'Docker', icon: <FaDocker size={14} /> },
+              ].map((t) => (
+                <span
+                  key={t.name}
+                  className="inline-flex items-center gap-1.5 font-mono text-xs px-3 py-1 rounded-md border border-surface-border text-ink-muted hover:text-accent hover:border-accent/40 transition-colors duration-200"
+                >
+                  {t.icon}
+                  {t.name}
+                </span>
+              ))}
+            </div>
+          </section>
+
           {/* ── PROJECTS ── */}
           <section
             id="projects"
@@ -305,64 +302,43 @@ function App() {
         <footer
           id="contact"
           ref={el => sectionRefs.current[3] = el}
-          className="w-full py-16 mt-12 scroll-mt-[5rem]"
+          className="w-full py-20 mt-12 scroll-mt-[5rem]"
         >
-          <SectionHeader title="Contact" visible={visibleSections.has('contact')} />
-
-          <div className={`text-center mb-10 ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '80ms' }}>
-            <h2 className="font-serif text-4xl sm:text-5xl text-ink leading-tight mb-4">
-              Get in <span className="italic text-accent">touch.</span>
-            </h2>
-            <p className="text-ink-muted text-sm max-w-[50ch] mx-auto leading-relaxed">
+          <div className={`max-w-md mx-auto text-center ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`}>
+            <p className="text-ink-muted text-sm mb-8">
               Looking for Summer 2026 SWE internships — full-stack, backend, or automation.
             </p>
-          </div>
 
-          <div className={`flex flex-wrap gap-3 justify-center mb-12 ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '160ms' }}>
             <a
               href="mailto:umolina2005@gmail.com"
               onClick={handleCopyEmail}
               title="Click to copy"
-              className="group flex items-center gap-3 px-5 py-3 rounded-xl border border-surface-border hover:border-accent hover:bg-accent/5 transition-all duration-200"
+              className="inline-block text-accent hover:text-accent-light font-mono text-sm transition-colors duration-200"
             >
-              <FaEnvelope size={14} className="text-ink-dim group-hover:text-accent transition-colors" />
-              <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">umolina2005@gmail.com</span>
+              umolina2005@gmail.com
             </a>
-            <a
-              href="https://github.com/UlissesMolina"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-3 px-5 py-3 rounded-xl border border-surface-border hover:border-accent hover:bg-accent/5 transition-all duration-200"
-            >
-              <FaGithub size={14} className="text-ink-dim group-hover:text-accent transition-colors" />
-              <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">github.com/UlissesMolina</span>
-            </a>
-            <a
-              href="https://www.linkedin.com/in/ulissesmolina"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-3 px-5 py-3 rounded-xl border border-surface-border hover:border-accent hover:bg-accent/5 transition-all duration-200"
-            >
-              <FaLinkedin size={14} className="text-ink-dim group-hover:text-accent transition-colors" />
-              <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">linkedin.com/in/ulissesmolina</span>
-            </a>
-            <a
-              href="/uliResume.pdf"
-              download="uliResume.pdf"
-              className="group flex items-center gap-3 px-5 py-3 rounded-xl border border-surface-border hover:border-accent hover:bg-accent/5 transition-all duration-200"
-            >
-              <FaFileAlt size={14} className="text-ink-dim group-hover:text-accent transition-colors" />
-              <span className="text-sm text-ink-muted group-hover:text-ink transition-colors">Resume (PDF)</span>
-            </a>
-          </div>
 
-          {clockTime && (
-            <div className={`text-center ${visibleSections.has('contact') ? 'anim-float-up' : 'opacity-0'}`} style={{ animationDelay: '240ms' }}>
-              <p className="font-mono text-[11px] text-ink-dim tabular-nums">
+            <div className="flex items-center justify-center gap-4 mt-8">
+              <a href="https://github.com/UlissesMolina" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-border text-ink-dim hover:text-accent hover:border-accent transition-all duration-200">
+                <FaGithub size={18} />
+              </a>
+              <a href="https://www.linkedin.com/in/ulissesmolina" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-border text-ink-dim hover:text-accent hover:border-accent transition-all duration-200">
+                <FaLinkedin size={18} />
+              </a>
+              <a href="mailto:umolina2005@gmail.com" aria-label="Email" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-border text-ink-dim hover:text-accent hover:border-accent transition-all duration-200">
+                <FaEnvelope size={18} />
+              </a>
+              <a href="/uliResume.pdf" download="uliResume.pdf" aria-label="Resume" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-border text-ink-dim hover:text-accent hover:border-accent transition-all duration-200">
+                <FaFileAlt size={16} />
+              </a>
+            </div>
+
+            {clockTime && (
+              <p className="font-mono text-[11px] text-ink-dim tabular-nums mt-10">
                 {clockTime} — {Intl.DateTimeFormat().resolvedOptions().timeZone}
               </p>
-            </div>
-          )}
+            )}
+          </div>
         </footer>
       </div>
 

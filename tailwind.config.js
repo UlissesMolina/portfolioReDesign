@@ -13,9 +13,9 @@ export default {
       },
       colors: {
         accent: {
-          DEFAULT: 'var(--accent, #ff6b35)',
-          light: 'var(--accent-light, #ff8c5a)',
-          dark: '#e55a2b',
+          DEFAULT: 'var(--accent, #c62d42)',
+          light: 'var(--accent-light, #e8556b)',
+          dark: '#8f2436',
         },
         surface: {
           bg: 'rgb(var(--surface-bg) / <alpha-value>)',
@@ -30,7 +30,7 @@ export default {
         },
       },
       backgroundImage: {
-        'grid-subtle': 'linear-gradient(rgba(255,107,53,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,107,53,0.03) 1px, transparent 1px)',
+        'grid-subtle': 'linear-gradient(rgba(198,45,66,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(198,45,66,0.045) 1px, transparent 1px)',
       },
       backgroundSize: {
         'grid': '48px 48px',
