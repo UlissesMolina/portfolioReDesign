@@ -7,33 +7,37 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Satoshi', 'system-ui', 'sans-serif'],
-        serif: ['Instrument Serif', 'Georgia', 'serif'],
-        mono: ['JetBrains Mono', 'Consolas', 'monospace'],
+        mono: ['"JetBrains Mono"', 'Fira Code', 'Consolas', 'monospace'],
       },
       colors: {
-        accent: {
-          DEFAULT: 'var(--accent, #c62d42)',
-          light: 'var(--accent-light, #e8556b)',
-          dark: '#8f2436',
-        },
-        surface: {
-          bg: 'rgb(var(--surface-bg) / <alpha-value>)',
-          inset: 'rgb(var(--surface-inset) / <alpha-value>)',
-          card: 'rgb(var(--surface-card) / <alpha-value>)',
-          border: 'rgb(var(--surface-border) / <alpha-value>)',
-        },
-        ink: {
-          DEFAULT: 'rgb(var(--ink) / <alpha-value>)',
-          muted: 'rgb(var(--ink-muted) / <alpha-value>)',
-          dim: 'rgb(var(--ink-dim) / <alpha-value>)',
+        ctp: {
+          base:      'rgb(var(--ctp-base) / <alpha-value>)',
+          mantle:    'rgb(var(--ctp-mantle) / <alpha-value>)',
+          crust:     'rgb(var(--ctp-crust) / <alpha-value>)',
+          text:      'rgb(var(--ctp-text) / <alpha-value>)',
+          subtext1:  'rgb(var(--ctp-subtext1) / <alpha-value>)',
+          subtext0:  'rgb(var(--ctp-subtext0) / <alpha-value>)',
+          overlay0:  'rgb(var(--ctp-overlay0) / <alpha-value>)',
+          surface2:  'rgb(var(--ctp-surface2) / <alpha-value>)',
+          surface1:  'rgb(var(--ctp-surface1) / <alpha-value>)',
+          surface0:  'rgb(var(--ctp-surface0) / <alpha-value>)',
+          rosewater: 'rgb(var(--ctp-rosewater) / <alpha-value>)',
+          flamingo:  'rgb(var(--ctp-flamingo) / <alpha-value>)',
+          pink:      'rgb(var(--ctp-pink) / <alpha-value>)',
+          mauve:     'rgb(var(--ctp-mauve) / <alpha-value>)',
+          red:       'rgb(var(--ctp-red) / <alpha-value>)',
+          peach:     'rgb(var(--ctp-peach) / <alpha-value>)',
+          yellow:    'rgb(var(--ctp-yellow) / <alpha-value>)',
+          green:     'rgb(var(--ctp-green) / <alpha-value>)',
+          teal:      'rgb(var(--ctp-teal) / <alpha-value>)',
+          sapphire:  'rgb(var(--ctp-sapphire) / <alpha-value>)',
+          blue:      'rgb(var(--ctp-blue) / <alpha-value>)',
+          lavender:  'rgb(var(--ctp-lavender) / <alpha-value>)',
+          accent:    'rgb(var(--ctp-accent) / <alpha-value>)',
         },
       },
-      backgroundImage: {
-        'grid-subtle': 'linear-gradient(rgba(198,45,66,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(198,45,66,0.045) 1px, transparent 1px)',
-      },
-      backgroundSize: {
-        'grid': '48px 48px',
+      maxWidth: {
+        content: '1140px',
       },
     },
   },

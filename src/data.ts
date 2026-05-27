@@ -16,25 +16,18 @@ export interface Experience {
 export interface Project {
   slug: string;
   title: string;
-  status: 'live' | 'shipped';
+  status: 'live' | 'shipped' | 'archived';
   description: string;
   longDescription: string;
   tags: Tag[];
   image: string;
   githubUrl: string;
   demoUrl: string | null;
-  repoPath: string;
-  stars: number;
-  contributors: number;
+  year: string;
+  buildTime: string;
 }
 
 // ─── constants ───────────────────────────────────────────────────────────────
-
-export const NOW = {
-  company: 'OCV',
-  learning: 'production React patterns',
-  shipping: 'Trackr v2',
-};
 
 export const GITHUB_USERNAME = 'UlissesMolina';
 export const EMAIL = 'umolina2005@gmail.com';
@@ -51,7 +44,6 @@ export const LANGUAGE_BAR = [
   { label: 'Other', color: 'overlay0', percent: 5 },
 ] as const;
 
-export const LATEST_COMMIT_SHA = '1c331f0';
 
 // ─── color map ───────────────────────────────────────────────────────────────
 
@@ -88,9 +80,9 @@ export const experiences: Experience[] = [
     description:
       'Contributed to client-facing business software handling real user data and workflows. Improved reliability through bug fixes, test coverage, and code review.',
     tags: [
-      { label: 'java', color: 'peach' },
-      { label: 'spring boot', color: 'green' },
-      { label: 'postgresql', color: 'blue' },
+      { label: 'xcode', color: 'blue' },
+      { label: 'github', color: 'mauve' },
+      { label: 'aws', color: 'peach' },
     ],
   },
 ];
@@ -102,9 +94,9 @@ export const projects: Project[] = [
     slug: 'trackr',
     title: 'trackr',
     status: 'live',
-    description: 'job tracker with kanban board and gpt-4o cover letter generation.',
+    description: 'Job application tracker with a Kanban board, timeline, and GPT-4o cover letter generation.',
     longDescription:
-      'I was tracking internship apps in a Google Sheet and got tired of it, so I built this instead. Drag-and-drop Kanban board, application timeline, and a cover letter generator that uses GPT-4o. A few friends started using it too.',
+      'Job application tracker with a Kanban board, timeline, and GPT-4o cover letter generation.',
     tags: [
       { label: 'react', color: 'blue' },
       { label: 'typescript', color: 'blue' },
@@ -114,36 +106,16 @@ export const projects: Project[] = [
     image: '/trackr.png',
     githubUrl: 'https://github.com/UlissesMolina/Trackr',
     demoUrl: 'https://usetrackr.netlify.app/',
-    repoPath: 'UlissesMolina/Trackr',
-    stars: 24,
-    contributors: 3,
-  },
-  {
-    slug: 'clarity',
-    title: 'clarity finance',
-    status: 'live',
-    description: 'track income, expenses, and savings in one clean dashboard.',
-    longDescription:
-      'Personal finance dashboard. Income, expenses, savings, spending trends. Most budgeting apps try to do everything. This one just shows you where your money goes.',
-    tags: [
-      { label: 'react', color: 'blue' },
-      { label: 'typescript', color: 'blue' },
-      { label: 'css', color: 'peach' },
-    ],
-    image: '/clarity.png',
-    githubUrl: 'https://github.com/UlissesMolina/FinanceDashBoard',
-    demoUrl: 'https://clarityfi.netlify.app/',
-    repoPath: 'UlissesMolina/FinanceDashBoard',
-    stars: 12,
-    contributors: 1,
+    year: '2025',
+    buildTime: '2025',
   },
   {
     slug: 'enterprise',
-    title: 'enterprise expense api',
+    title: 'enterprise ai',
     status: 'shipped',
-    description: 'expense approval workflow with jwt auth and role-based access.',
+    description: 'REST API for expense report submissions. JWT auth, role-based access, multi-step approval workflow.',
     longDescription:
-      'REST API for expense report submissions and approvals. JWT auth, role-based access, multi-step approval workflow. I wanted to learn how enterprise backends actually work, so I built one.',
+      'REST API for expense report submissions. JWT auth, role-based access, multi-step approval workflow.',
     tags: [
       { label: 'java', color: 'peach' },
       { label: 'spring boot', color: 'green' },
@@ -153,17 +125,34 @@ export const projects: Project[] = [
     image: '/enterprise.png',
     githubUrl: 'https://github.com/UlissesMolina/Enterprise',
     demoUrl: null,
-    repoPath: 'UlissesMolina/Enterprise',
-    stars: 8,
-    contributors: 2,
+    year: '2026',
+    buildTime: '2026',
+  },
+  {
+    slug: 'clarity',
+    title: 'clarity finance',
+    status: 'live',
+    description: 'Personal finance dashboard. Income, expenses, savings, spending trends.',
+    longDescription:
+      'Personal finance dashboard. Income, expenses, savings, spending trends.',
+    tags: [
+      { label: 'react', color: 'blue' },
+      { label: 'typescript', color: 'blue' },
+      { label: 'css', color: 'peach' },
+    ],
+    image: '/clarity.png',
+    githubUrl: 'https://github.com/UlissesMolina/FinanceDashBoard',
+    demoUrl: 'https://clarityfi.netlify.app/',
+    year: '2025',
+    buildTime: '2025',
   },
   {
     slug: 'audaz',
     title: 'audaz',
     status: 'shipped',
-    description: 'chess engine with move generation, search, and eval.',
+    description: 'Chess engine in C++. Move generator, alpha-beta search, evaluation function. Bitboards.',
     longDescription:
-      'Chess engine in C++. Wrote the move generator, alpha-beta search, and eval function from scratch. Learned more about bitboards than I expected to.',
+      'Chess engine in C++. Move generator, alpha-beta search, evaluation function. Bitboards.',
     tags: [
       { label: 'c++', color: 'red' },
       { label: 'cmake', color: 'teal' },
@@ -171,14 +160,30 @@ export const projects: Project[] = [
     image: '/audaz.png',
     githubUrl: 'https://github.com/UlissesMolina/ChessBot',
     demoUrl: null,
-    repoPath: 'UlissesMolina/ChessBot',
-    stars: 31,
-    contributors: 1,
+    year: '2025',
+    buildTime: '2025',
+  },
+  {
+    slug: 'tiger-scheduler',
+    title: 'tiger scheduler',
+    status: 'shipped',
+    description: 'Auto-register tool for Auburn University course scheduling. Automates seat monitoring and registration.',
+    longDescription:
+      'Auto-register tool for Auburn University course scheduling. Automates seat monitoring and registration.',
+    tags: [
+      { label: 'python', color: 'green' },
+      { label: 'selenium', color: 'teal' },
+    ],
+    image: '/auburn.png',
+    githubUrl: 'https://github.com/UlissesMolina/Tiger-Scheduler-Course-Auto-Register-Tool',
+    demoUrl: null,
+    year: '2025',
+    buildTime: '2025',
   },
 ];
 
 // featured projects shown on homepage (slugs)
-export const FEATURED_SLUGS = ['trackr', 'audaz'];
+export const FEATURED_SLUGS = ['trackr', 'enterprise'];
 export const featuredProjects = projects.filter((p) =>
   FEATURED_SLUGS.includes(p.slug),
 );
@@ -193,35 +198,4 @@ export interface BlogPost {
   tags: Tag[];
 }
 
-export const blogPosts: BlogPost[] = [
-  {
-    slug: 'spring-boot-testing',
-    title: 'what I learned writing tests at OCV',
-    date: '2026-05-18',
-    body: 'Writing integration tests for real user workflows changed how I think about code. Most of what I write now starts with the test. Still figuring out the balance between coverage and speed.',
-    tags: [
-      { label: 'java', color: 'peach' },
-      { label: 'testing', color: 'green' },
-    ],
-  },
-  {
-    slug: 'trackr-v2-rewrite',
-    title: 'rewriting trackr in typescript',
-    date: '2026-04-30',
-    body: "Trackr started as a plain React app with no types. Migrating to TypeScript caught a dozen bugs I didn't know existed. The kanban drag-and-drop logic was especially painful to type correctly.",
-    tags: [
-      { label: 'typescript', color: 'blue' },
-      { label: 'react', color: 'blue' },
-    ],
-  },
-  {
-    slug: 'why-i-built-this-site',
-    title: 'why I rebuilt my portfolio from scratch',
-    date: '2026-03-15',
-    body: 'I wanted something that felt like mine — not a template, not a drag-and-drop builder. Catppuccin colors, monospace type, and a layout that gets out of the way. Still tweaking it.',
-    tags: [
-      { label: 'react', color: 'blue' },
-      { label: 'design', color: 'mauve' },
-    ],
-  },
-];
+export const blogPosts: BlogPost[] = [];

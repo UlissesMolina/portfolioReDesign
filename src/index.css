@@ -3,7 +3,12 @@
 @tailwind utilities;
 
 /* ── catppuccin mocha (default) ── */
-:root,
+:root {
+  --ctp-accent: 203 166 247;
+  --ctp-accent-glow: rgba(203, 166, 247, 0.12);
+  --ctp-accent-border: rgba(203, 166, 247, 0.25);
+}
+
 [data-theme="mocha"] {
   --ctp-base:      30 30 46;
   --ctp-mantle:    24 24 37;
@@ -15,6 +20,8 @@
   --ctp-surface2:  88 91 112;
   --ctp-surface1:  69 71 90;
   --ctp-surface0:  49 50 68;
+  --ctp-rosewater: 245 224 220;
+  --ctp-flamingo:  242 205 205;
   --ctp-pink:      245 194 231;
   --ctp-mauve:     203 166 247;
   --ctp-red:       243 139 168;
@@ -22,6 +29,7 @@
   --ctp-yellow:    249 226 175;
   --ctp-green:     166 227 161;
   --ctp-teal:      148 226 213;
+  --ctp-sapphire:  116 199 236;
   --ctp-blue:      137 180 250;
   --ctp-lavender:  180 190 254;
 
@@ -31,32 +39,172 @@
   --selection-bg:  rgba(203, 166, 247, 0.22);
 }
 
-/* ── catppuccin latte (light) ── */
-[data-theme="latte"] {
-  --ctp-base:      239 241 245;
-  --ctp-mantle:    230 233 239;
-  --ctp-crust:     220 224 232;
-  --ctp-text:      76 79 105;
-  --ctp-subtext1:  92 95 119;
-  --ctp-subtext0:  108 111 133;
-  --ctp-overlay0:  156 160 176;
-  --ctp-surface2:  172 176 190;
-  --ctp-surface1:  188 192 204;
-  --ctp-surface0:  204 208 218;
-  --ctp-pink:      234 118 203;
-  --ctp-mauve:     136 57 239;
-  --ctp-red:       210 15 57;
-  --ctp-peach:     254 100 11;
-  --ctp-yellow:    223 142 29;
-  --ctp-green:     64 160 43;
-  --ctp-teal:      23 146 153;
-  --ctp-blue:      30 102 245;
-  --ctp-lavender:  114 135 253;
 
-  --vinyl-groove:  #ccc;
-  --vinyl-groove-alt: #bbb;
-  --vinyl-shine:   rgba(255, 255, 255, 0.15);
-  --selection-bg:  rgba(136, 57, 239, 0.18);
+/* ── tokyo night ── */
+[data-theme="tokyo-night"] {
+  --ctp-base:      26 27 38;
+  --ctp-mantle:    22 22 30;
+  --ctp-crust:     18 18 24;
+  --ctp-text:      192 202 245;
+  --ctp-subtext1:  169 177 214;
+  --ctp-subtext0:  145 153 191;
+  --ctp-overlay0:  86 95 137;
+  --ctp-surface2:  68 75 106;
+  --ctp-surface1:  55 62 89;
+  --ctp-surface0:  41 46 66;
+  --ctp-rosewater: 240 200 180;
+  --ctp-flamingo:  224 175 175;
+  --ctp-pink:      255 117 198;
+  --ctp-mauve:     187 154 247;
+  --ctp-red:       247 118 142;
+  --ctp-peach:     255 158 100;
+  --ctp-yellow:    224 175 104;
+  --ctp-green:     158 206 106;
+  --ctp-teal:      115 218 202;
+  --ctp-sapphire:  45 185 220;
+  --ctp-blue:      122 162 247;
+  --ctp-lavender:  157 171 255;
+
+  --vinyl-groove:  #12121a;
+  --vinyl-groove-alt: #1a1b28;
+  --vinyl-shine:   rgba(255, 255, 255, 0.03);
+  --selection-bg:  rgba(187, 154, 247, 0.22);
+}
+
+/* ── rose pine ── */
+[data-theme="rose-pine"] {
+  --ctp-base:      25 23 36;
+  --ctp-mantle:    21 19 30;
+  --ctp-crust:     18 16 25;
+  --ctp-text:      224 222 244;
+  --ctp-subtext1:  200 197 227;
+  --ctp-subtext0:  144 140 170;
+  --ctp-overlay0:  110 106 134;
+  --ctp-surface2:  82 79 103;
+  --ctp-surface1:  64 61 82;
+  --ctp-surface0:  46 42 59;
+  --ctp-rosewater: 234 212 210;
+  --ctp-flamingo:  235 188 186;
+  --ctp-pink:      235 111 146;
+  --ctp-mauve:     196 167 231;
+  --ctp-red:       235 111 146;
+  --ctp-peach:     246 193 119;
+  --ctp-yellow:    246 193 119;
+  --ctp-green:     156 207 216;
+  --ctp-teal:      156 207 216;
+  --ctp-sapphire:  49 116 143;
+  --ctp-blue:      49 116 143;
+  --ctp-lavender:  196 167 231;
+
+  --vinyl-groove:  #12101c;
+  --vinyl-groove-alt: #1a1724;
+  --vinyl-shine:   rgba(255, 255, 255, 0.03);
+  --selection-bg:  rgba(196, 167, 231, 0.22);
+}
+
+/* ── gruvbox dark ── */
+[data-theme="gruvbox"] {
+  --ctp-base:      40 40 40;
+  --ctp-mantle:    29 32 33;
+  --ctp-crust:     24 24 24;
+  --ctp-text:      235 219 178;
+  --ctp-subtext1:  213 196 161;
+  --ctp-subtext0:  189 174 147;
+  --ctp-overlay0:  146 131 116;
+  --ctp-surface2:  124 111 100;
+  --ctp-surface1:  102 92 84;
+  --ctp-surface0:  80 73 69;
+  --ctp-rosewater: 235 219 178;
+  --ctp-flamingo:  251 73 52;
+  --ctp-pink:      211 134 155;
+  --ctp-mauve:     211 134 155;
+  --ctp-red:       251 73 52;
+  --ctp-peach:     254 128 25;
+  --ctp-yellow:    250 189 47;
+  --ctp-green:     184 187 38;
+  --ctp-teal:      142 192 124;
+  --ctp-sapphire:  131 165 152;
+  --ctp-blue:      131 165 152;
+  --ctp-lavender:  211 134 155;
+
+  --vinyl-groove:  #181818;
+  --vinyl-groove-alt: #242424;
+  --vinyl-shine:   rgba(255, 255, 255, 0.03);
+  --selection-bg:  rgba(254, 128, 25, 0.22);
+}
+
+/* ── nord ── */
+[data-theme="nord"] {
+  --ctp-base:      46 52 64;
+  --ctp-mantle:    40 44 52;
+  --ctp-crust:     36 40 47;
+  --ctp-text:      216 222 233;
+  --ctp-subtext1:  200 207 218;
+  --ctp-subtext0:  180 188 200;
+  --ctp-overlay0:  118 130 147;
+  --ctp-surface2:  94 105 120;
+  --ctp-surface1:  76 86 106;
+  --ctp-surface0:  59 66 82;
+  --ctp-rosewater: 216 222 233;
+  --ctp-flamingo:  191 97 106;
+  --ctp-pink:      180 142 173;
+  --ctp-mauve:     180 142 173;
+  --ctp-red:       191 97 106;
+  --ctp-peach:     208 135 112;
+  --ctp-yellow:    235 203 139;
+  --ctp-green:     163 190 140;
+  --ctp-teal:      143 188 187;
+  --ctp-sapphire:  136 192 208;
+  --ctp-blue:      129 161 193;
+  --ctp-lavender:  94 129 172;
+
+  --vinyl-groove:  #242832;
+  --vinyl-groove-alt: #2c313c;
+  --vinyl-shine:   rgba(255, 255, 255, 0.03);
+  --selection-bg:  rgba(136, 192, 208, 0.22);
+}
+
+
+/* ── palette preset picker (labeled) ── */
+.palette-grid-labeled {
+  display: flex;
+  gap: 12px;
+}
+
+.palette-dot-labeled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.palette-dot-labeled:hover {
+  transform: scale(1.08);
+}
+
+.palette-swatch-lg {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  position: relative;
+  transition: box-shadow 0.25s ease;
+}
+
+.palette-label {
+  font-size: 9px;
+  font-family: inherit;
+  color: rgb(var(--ctp-overlay0));
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.palette-label.is-active {
+  color: rgb(var(--ctp-accent));
 }
 
 @layer base {
@@ -76,8 +224,8 @@
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    transition: background-color 0.35s ease, color 0.35s ease;
   }
+
 
   ::selection {
     background: var(--selection-bg);
@@ -108,6 +256,19 @@
   }
 }
 
+/* smooth theme color fade — active only during theme switch */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: color 0.5s ease,
+              background-color 0.5s ease,
+              border-color 0.5s ease,
+              fill 0.5s ease,
+              stroke 0.5s ease,
+              box-shadow 0.5s ease !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -124,45 +285,21 @@
   background: rgb(var(--ctp-surface0));
 }
 
-/* widget / card surface */
+/* widget / card surface — transparent with border only */
 .widget {
-  background: rgb(var(--ctp-mantle));
-  border: 0.5px solid rgb(var(--ctp-surface0));
+  background: transparent;
+  border: 1px solid rgb(var(--ctp-surface0) / 0.5);
   border-radius: 8px;
   padding: 14px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.35s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .widget:hover {
   border-color: rgb(var(--ctp-surface1));
   transform: translateY(-1px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* ── nested card depth ── */
-.card-outer {
-  background: rgb(var(--ctp-mantle));
-  border: 0.5px solid rgb(var(--ctp-surface0));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.25s ease, background-color 0.35s ease;
-}
 
-.card-outer:hover {
-  border-color: rgb(var(--ctp-surface1));
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 0 0 1px rgba(var(--ctp-surface1), 0.3),
-    0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.card-inner {
-  background: rgb(var(--ctp-crust));
-  border: 0.5px solid rgb(var(--ctp-surface0));
-}
 
 /* ── grain texture ── */
 .grain-active::before {
@@ -190,7 +327,6 @@
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 14px;
-  align-items: stretch;
 }
 
 @media (max-width: 1023px) {
@@ -242,9 +378,10 @@
 /* scroll-triggered reveal */
 [data-reveal] {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
 }
 
 [data-reveal].is-visible {
@@ -268,100 +405,185 @@
     /* spindle hole */
     radial-gradient(circle,
       rgb(var(--ctp-base)) 0%,
-      rgb(var(--ctp-base)) 4%,
+      rgb(var(--ctp-base)) 3.5%,
+      rgba(255, 255, 255, 0.08) 3.5%,
+      rgba(255, 255, 255, 0.08) 4%,
       transparent 4.5%
+    ),
+    /* label inner ring */
+    radial-gradient(circle,
+      transparent 8%,
+      rgba(255, 255, 255, 0.04) 8.5%,
+      transparent 9%
     ),
     /* label highlight ring */
     radial-gradient(circle,
       transparent 14%,
-      rgba(255, 255, 255, 0.06) 14.5%,
-      rgba(255, 255, 255, 0.06) 15.5%,
+      rgba(255, 255, 255, 0.08) 14.5%,
+      rgba(255, 255, 255, 0.08) 15.5%,
       transparent 16%
     ),
-    /* label area */
+    /* label text arc hint */
     radial-gradient(circle,
-      rgb(var(--ctp-mauve)) 0%,
-      rgb(var(--ctp-mauve)) 20%,
-      color-mix(in srgb, rgb(var(--ctp-mauve)) 60%, black) 21%,
-      transparent 21.5%
+      transparent 10%,
+      rgba(255, 255, 255, 0.03) 11%,
+      transparent 12%,
+      rgba(255, 255, 255, 0.02) 13%,
+      transparent 13.5%
     ),
-    /* grooves — tighter spacing for realism */
+    /* label area with subtle gradient */
     radial-gradient(circle,
-      var(--vinyl-groove) 22%,
-      var(--vinyl-groove-alt) 24%,
-      var(--vinyl-groove) 26%,
-      var(--vinyl-groove-alt) 28%,
-      var(--vinyl-groove) 30%,
-      var(--vinyl-groove-alt) 32%,
-      var(--vinyl-groove) 34%,
-      var(--vinyl-groove-alt) 36%,
-      var(--vinyl-groove) 38%,
-      var(--vinyl-groove-alt) 40%,
-      var(--vinyl-groove) 42%,
-      var(--vinyl-groove-alt) 44%,
-      var(--vinyl-groove) 46%,
-      var(--vinyl-groove-alt) 48%,
-      var(--vinyl-groove) 50%,
-      var(--vinyl-groove-alt) 52%,
-      var(--vinyl-groove) 54%,
-      var(--vinyl-groove-alt) 56%,
-      var(--vinyl-groove) 58%,
-      var(--vinyl-groove-alt) 60%,
-      var(--vinyl-groove) 62%,
-      var(--vinyl-groove-alt) 64%,
-      var(--vinyl-groove) 66%,
-      var(--vinyl-groove-alt) 68%,
-      var(--vinyl-groove) 70%,
-      var(--vinyl-groove-alt) 72%,
-      var(--vinyl-groove) 74%,
-      var(--vinyl-groove-alt) 76%,
-      var(--vinyl-groove) 78%,
-      var(--vinyl-groove-alt) 80%,
-      var(--vinyl-groove) 82%,
-      var(--vinyl-groove-alt) 84%,
-      var(--vinyl-groove) 86%,
-      var(--vinyl-groove-alt) 88%,
-      var(--vinyl-groove) 90%,
-      var(--vinyl-groove-alt) 92%,
-      var(--vinyl-groove) 94%,
-      var(--vinyl-groove-alt) 96%,
+      color-mix(in srgb, rgb(var(--ctp-accent)) 90%, white) 0%,
+      rgb(var(--ctp-accent)) 12%,
+      color-mix(in srgb, rgb(var(--ctp-accent)) 85%, black) 18%,
+      color-mix(in srgb, rgb(var(--ctp-accent)) 60%, black) 20.5%,
+      transparent 21%
+    ),
+    /* dead wax / run-out area */
+    radial-gradient(circle,
+      transparent 21%,
+      rgba(255, 255, 255, 0.03) 21.5%,
+      rgba(255, 255, 255, 0.01) 23%,
+      transparent 23.5%
+    ),
+    /* grooves — tighter 1% spacing for realism */
+    radial-gradient(circle,
+      var(--vinyl-groove) 23.5%,
+      var(--vinyl-groove-alt) 24.5%,
+      var(--vinyl-groove) 25.5%,
+      var(--vinyl-groove-alt) 26.5%,
+      var(--vinyl-groove) 27.5%,
+      var(--vinyl-groove-alt) 28.5%,
+      var(--vinyl-groove) 29.5%,
+      var(--vinyl-groove-alt) 30.5%,
+      var(--vinyl-groove) 31.5%,
+      var(--vinyl-groove-alt) 32.5%,
+      var(--vinyl-groove) 33.5%,
+      var(--vinyl-groove-alt) 34.5%,
+      var(--vinyl-groove) 35.5%,
+      var(--vinyl-groove-alt) 36.5%,
+      var(--vinyl-groove) 37.5%,
+      var(--vinyl-groove-alt) 38.5%,
+      var(--vinyl-groove) 39.5%,
+      var(--vinyl-groove-alt) 40.5%,
+      var(--vinyl-groove) 41.5%,
+      var(--vinyl-groove-alt) 42.5%,
+      var(--vinyl-groove) 43.5%,
+      var(--vinyl-groove-alt) 44.5%,
+      var(--vinyl-groove) 45.5%,
+      var(--vinyl-groove-alt) 46.5%,
+      var(--vinyl-groove) 47.5%,
+      var(--vinyl-groove-alt) 48.5%,
+      var(--vinyl-groove) 49.5%,
+      var(--vinyl-groove-alt) 50.5%,
+      var(--vinyl-groove) 51.5%,
+      var(--vinyl-groove-alt) 52.5%,
+      var(--vinyl-groove) 53.5%,
+      var(--vinyl-groove-alt) 54.5%,
+      var(--vinyl-groove) 55.5%,
+      var(--vinyl-groove-alt) 56.5%,
+      var(--vinyl-groove) 57.5%,
+      var(--vinyl-groove-alt) 58.5%,
+      var(--vinyl-groove) 59.5%,
+      var(--vinyl-groove-alt) 60.5%,
+      var(--vinyl-groove) 61.5%,
+      var(--vinyl-groove-alt) 62.5%,
+      var(--vinyl-groove) 63.5%,
+      var(--vinyl-groove-alt) 64.5%,
+      var(--vinyl-groove) 65.5%,
+      var(--vinyl-groove-alt) 66.5%,
+      var(--vinyl-groove) 67.5%,
+      var(--vinyl-groove-alt) 68.5%,
+      var(--vinyl-groove) 69.5%,
+      var(--vinyl-groove-alt) 70.5%,
+      var(--vinyl-groove) 71.5%,
+      var(--vinyl-groove-alt) 72.5%,
+      var(--vinyl-groove) 73.5%,
+      var(--vinyl-groove-alt) 74.5%,
+      var(--vinyl-groove) 75.5%,
+      var(--vinyl-groove-alt) 76.5%,
+      var(--vinyl-groove) 77.5%,
+      var(--vinyl-groove-alt) 78.5%,
+      var(--vinyl-groove) 79.5%,
+      var(--vinyl-groove-alt) 80.5%,
+      var(--vinyl-groove) 81.5%,
+      var(--vinyl-groove-alt) 82.5%,
+      var(--vinyl-groove) 83.5%,
+      var(--vinyl-groove-alt) 84.5%,
+      var(--vinyl-groove) 85.5%,
+      var(--vinyl-groove-alt) 86.5%,
+      var(--vinyl-groove) 87.5%,
+      var(--vinyl-groove-alt) 88.5%,
+      var(--vinyl-groove) 89.5%,
+      var(--vinyl-groove-alt) 90.5%,
+      var(--vinyl-groove) 91.5%,
+      var(--vinyl-groove-alt) 92.5%,
+      var(--vinyl-groove) 93.5%,
+      var(--vinyl-groove-alt) 94.5%,
+      var(--vinyl-groove) 95.5%,
+      var(--vinyl-groove-alt) 96.5%,
+      var(--vinyl-groove) 97.5%,
+      var(--vinyl-groove-alt) 98.5%,
       var(--vinyl-groove) 100%
     );
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 0 0.5px rgba(255, 255, 255, 0.06),
     0 0 0 1.5px var(--vinyl-groove),
-    inset 0 0 8px rgba(0, 0, 0, 0.5);
+    inset 0 0 6px rgba(0, 0, 0, 0.6),
+    0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* light reflection sweep */
+/* rainbow iridescence + light reflection sweep */
 .vinyl-record::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    var(--vinyl-shine) 30deg,
-    rgba(255, 255, 255, 0.05) 50deg,
-    transparent 70deg,
-    transparent 170deg,
-    var(--vinyl-shine) 200deg,
-    rgba(255, 255, 255, 0.05) 220deg,
-    transparent 240deg
-  );
+  background:
+    /* iridescent rainbow on grooves */
+    conic-gradient(
+      from 120deg,
+      transparent 0deg,
+      rgba(255, 100, 100, 0.04) 20deg,
+      rgba(255, 200, 100, 0.03) 40deg,
+      rgba(100, 255, 100, 0.04) 60deg,
+      rgba(100, 200, 255, 0.03) 80deg,
+      rgba(180, 100, 255, 0.04) 100deg,
+      transparent 120deg,
+      transparent 240deg,
+      rgba(255, 150, 100, 0.03) 260deg,
+      rgba(100, 255, 200, 0.04) 280deg,
+      rgba(100, 150, 255, 0.03) 300deg,
+      rgba(200, 100, 255, 0.04) 320deg,
+      transparent 340deg
+    ),
+    /* primary light reflection */
+    conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      var(--vinyl-shine) 25deg,
+      rgba(255, 255, 255, 0.07) 45deg,
+      rgba(255, 255, 255, 0.04) 55deg,
+      transparent 70deg,
+      transparent 165deg,
+      var(--vinyl-shine) 190deg,
+      rgba(255, 255, 255, 0.06) 210deg,
+      rgba(255, 255, 255, 0.03) 225deg,
+      transparent 240deg
+    );
   pointer-events: none;
 }
 
-/* outer rim bevel */
+/* outer rim bevel + edge detail */
 .vinyl-record::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 50%;
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.05),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+    inset 0 1px 1px rgba(255, 255, 255, 0.07),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.25),
+    inset 0 0 2px rgba(0, 0, 0, 0.15);
   pointer-events: none;
 }
 
@@ -415,7 +637,7 @@
 .eq-bar {
   width: 2.5px;
   border-radius: 1px;
-  background: rgb(var(--ctp-mauve));
+  background: rgb(var(--ctp-accent));
 }
 
 .eq-bar:nth-child(1) { animation: eq-bar-1 1.2s ease-in-out infinite; }
@@ -436,7 +658,7 @@
   background: rgb(var(--ctp-crust));
   border-radius: 8px;
   padding: 3px;
-  border: 0.5px solid rgb(var(--ctp-surface0));
+  border: 1px solid rgb(var(--ctp-surface0));
   transition: background-color 0.35s ease, border-color 0.35s ease;
 }
 
@@ -480,7 +702,7 @@
 }
 
 .theme-segmented-btn.is-active {
-  color: rgb(var(--ctp-mauve));
+  color: rgb(var(--ctp-accent));
 }
 
 .theme-segmented-btn svg {
@@ -491,44 +713,3 @@
   transform: rotate(-15deg) scale(1.1);
 }
 
-/* ── project cards (projects page) ── */
-.project-card {
-  background: rgb(var(--ctp-mantle));
-  border: 0.5px solid rgb(var(--ctp-surface0));
-  border-radius: 10px;
-  overflow: hidden;
-  transition: border-color 0.2s ease, transform 0.25s ease, box-shadow 0.25s ease, background-color 0.35s ease;
-}
-
-.project-card:hover {
-  border-color: rgb(var(--ctp-surface1));
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-}
-
-.project-card-image {
-  position: relative;
-  overflow: hidden;
-}
-
-.project-card-image img {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  object-position: top;
-  transition: transform 0.4s ease, opacity 0.3s ease;
-  opacity: 0.92;
-}
-
-.project-card:hover .project-card-image img {
-  transform: scale(1.02);
-  opacity: 1;
-}
-
-.project-card-image::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgb(var(--ctp-mantle)) 0%, transparent 40%);
-  pointer-events: none;
-}
