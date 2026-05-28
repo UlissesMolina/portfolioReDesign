@@ -102,12 +102,34 @@ export function initTheme() {
 
 export function ThemeWidget() {
   const [active, setActive] = useState<PresetId>(getStoredPreset);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [highlight, setHighlight] = useState<{left: number; top: number; color: string} | null>(null);
+  const initialised = useRef(false);
 
   const pick = (id: PresetId) => {
     setActive(id);
     applyThemeById(id, true);
   };
 
+  // measure the active swatch position and update the sliding highlight
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+    const idx = PRESETS.findIndex(p => p.id === active);
+    const btn = grid.children[idx + 1] as HTMLElement | undefined; // +1 for the highlight div
+    if (!btn) return;
+    const swatch = btn.querySelector('.palette-swatch-lg') as HTMLElement | null;
+    if (!swatch) return;
+
+    const preset = PRESETS[idx];
+    const gridRect = grid.getBoundingClientRect();
+    const swatchRect = swatch.getBoundingClientRect();
+    const left = swatchRect.left - gridRect.left - 3;
+    const top = swatchRect.top - gridRect.top - 3;
+
+    initialised.current = true;
+    setHighlight({ left, top, color: preset.accentHex });
+  }, [active]);
 
   return (
     <div className="widget">
@@ -119,7 +141,18 @@ export function ThemeWidget() {
         <span className="text-[11px] text-ctp-overlay0">theme</span>
       </div>
 
-      <div className="palette-grid-labeled" role="radiogroup" aria-label="Theme selection">
+      <div className="palette-grid-labeled" ref={gridRef} role="radiogroup" aria-label="Theme selection" style={{ position: 'relative' }}>
+        {/* sliding highlight ring */}
+        {highlight && (
+          <div
+            className="palette-highlight-ring"
+            style={{
+              transform: `translate(${highlight.left}px, ${highlight.top}px)`,
+              borderColor: highlight.color,
+              boxShadow: `0 0 8px ${highlight.color}30`,
+            }}
+          />
+        )}
         {PRESETS.map((p) => (
           <button
             key={p.id}
@@ -134,9 +167,7 @@ export function ThemeWidget() {
               style={{
                 backgroundColor: p.bg,
                 border: '1px solid rgba(255,255,255,0.06)',
-                boxShadow: active === p.id
-                  ? `0 0 0 1.5px ${p.accentHex}, 0 0 0 3.5px rgb(var(--ctp-mantle))`
-                  : '0 1px 3px rgba(0, 0, 0, 0.25)',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.25)',
               }}
             >
               <span

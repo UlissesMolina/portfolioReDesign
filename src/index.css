@@ -168,7 +168,7 @@
 /* ── palette preset picker (labeled) ── */
 .palette-grid-labeled {
   display: flex;
-  gap: 12px;
+  justify-content: space-evenly;
 }
 
 .palette-dot-labeled {
@@ -187,12 +187,26 @@
   transform: scale(1.08);
 }
 
+.palette-highlight-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1.5px solid transparent;
+  pointer-events: none;
+  z-index: 1;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.35s ease,
+              box-shadow 0.35s ease;
+}
+
 .palette-swatch-lg {
   width: 26px;
   height: 26px;
   border-radius: 6px;
   position: relative;
-  transition: box-shadow 0.25s ease;
 }
 
 .palette-label {
