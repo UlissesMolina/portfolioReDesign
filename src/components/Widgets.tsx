@@ -92,7 +92,7 @@ function applyThemeById(id: PresetId, animate = false) {
   r.setProperty('--selection-bg', `rgba(${preset.accent.replace(/ /g, ', ')}, 0.22)`);
 
   if (animate) {
-    setTimeout(() => root.classList.remove('theme-transitioning'), 600);
+    setTimeout(() => root.classList.remove('theme-transitioning'), 350);
   }
 }
 

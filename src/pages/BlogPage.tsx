@@ -24,12 +24,8 @@ export default function BlogPage() {
           </h1>
           <div className="divider-line" />
         </div>
-        <p className="text-xs text-ctp-subtext0 leading-relaxed mb-10" data-animate data-animate-delay="2">
-          short dev log posts — things I'm learning, building, and thinking about.
-        </p>
-
         {blogPosts.length === 0 ? (
-          <div className="widget text-center py-12" data-animate data-animate-delay="3">
+          <div className="widget text-center py-12" data-animate data-animate-delay="2">
             <p className="text-sm text-ctp-overlay0">nothing here yet — check back soon.</p>
           </div>
         ) : (

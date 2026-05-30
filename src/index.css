@@ -275,12 +275,12 @@
 .theme-transitioning *,
 .theme-transitioning *::before,
 .theme-transitioning *::after {
-  transition: color 0.5s ease,
-              background-color 0.5s ease,
-              border-color 0.5s ease,
-              fill 0.5s ease,
-              stroke 0.5s ease,
-              box-shadow 0.5s ease !important;
+  transition: color 0.3s ease,
+              background-color 0.3s ease,
+              border-color 0.3s ease,
+              fill 0.3s ease,
+              stroke 0.3s ease,
+              box-shadow 0.3s ease !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -305,12 +305,13 @@
   border: 1px solid rgb(var(--ctp-surface0) / 0.5);
   border-radius: 8px;
   padding: 14px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .widget:hover {
-  border-color: rgb(var(--ctp-surface1));
-  transform: translateY(-1px);
+  border-color: rgb(var(--ctp-accent) / 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgb(var(--ctp-accent) / 0.06);
 }
 
 
@@ -725,5 +726,69 @@
 
 .theme-segmented-btn.is-active svg {
   transform: rotate(-15deg) scale(1.1);
+}
+
+/* ── project card hover — accent bar brightens + lift ── */
+.project-card {
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.project-card:hover {
+  border-color: rgb(var(--ctp-accent) / 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgb(var(--ctp-accent) / 0.06);
+}
+
+.project-card .accent-bar {
+  transition: opacity 0.15s ease, width 0.15s ease;
+}
+
+.project-card:hover .accent-bar {
+  opacity: 0.8;
+  width: 4px;
+}
+
+/* ── animated underline — wipe left-to-right ── */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.2s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ── arrow nudge on hover ── */
+.arrow-nudge {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.group:hover .arrow-nudge,
+a:hover > .arrow-nudge,
+button:hover > .arrow-nudge {
+  transform: translate(1.5px, -1.5px);
+}
+
+/* ── theme swatch pulse on active ── */
+@keyframes swatch-pulse {
+  0% { box-shadow: 0 0 0 0 currentColor; }
+  70% { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.palette-dot-labeled.is-active .palette-swatch-lg {
+  animation: swatch-pulse 0.4s ease-out;
 }
 

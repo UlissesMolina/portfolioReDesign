@@ -8,9 +8,9 @@ function ProjectRow({ project }: { project: Project }) {
     project.status === 'live' ? 'bg-ctp-green' : 'bg-ctp-mauve';
 
   return (
-    <article className="flex gap-0 border border-ctp-surface0/50 rounded-lg overflow-hidden hover:border-ctp-surface1 transition-colors">
+    <article className="project-card flex gap-0 border border-ctp-surface0/50 rounded-lg overflow-hidden">
       {/* status accent bar */}
-      <div className={`w-[3px] shrink-0 ${statusColor} opacity-40`} />
+      <div className={`accent-bar w-[3px] shrink-0 ${statusColor} opacity-40`} />
 
       <div className="flex-1 px-5 py-4">
         {/* top row: title + status + year */}
@@ -35,7 +35,7 @@ function ProjectRow({ project }: { project: Project }) {
                 rel="noopener noreferrer"
                 className="text-ctp-accent hover:text-ctp-accent/80 transition-colors"
               >
-                live ↗
+                live <span className="arrow-nudge">↗</span>
               </a>
             )}
             <a
@@ -44,7 +44,7 @@ function ProjectRow({ project }: { project: Project }) {
               rel="noopener noreferrer"
               className="text-ctp-overlay0 hover:text-ctp-text transition-colors"
             >
-              code ↗
+              code <span className="arrow-nudge">↗</span>
             </a>
           </div>
         </div>

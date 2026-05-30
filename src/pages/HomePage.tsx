@@ -94,13 +94,13 @@ export default function HomePage() {
               <button type="button" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="text-ctp-accent hover:text-ctp-accent/80 transition-colors">reach out</button>!
             </p>
             <div data-animate data-animate-delay="4" className="flex items-center gap-4 mt-4 text-xs text-ctp-overlay0">
-              <a href={`https://github.com/${GITHUB_USERNAME}`} target="_blank" rel="noopener noreferrer" className="hover:text-ctp-text transition-colors">github</a>
+              <a href={`https://github.com/${GITHUB_USERNAME}`} target="_blank" rel="noopener noreferrer" className="link-underline hover:text-ctp-text transition-colors">github</a>
               <span className="text-ctp-surface1">·</span>
-              <a href="https://www.linkedin.com/in/ulissesmolina" target="_blank" rel="noopener noreferrer" className="hover:text-ctp-text transition-colors">linkedin</a>
+              <a href="https://www.linkedin.com/in/ulissesmolina" target="_blank" rel="noopener noreferrer" className="link-underline hover:text-ctp-text transition-colors">linkedin</a>
               <span className="text-ctp-surface1">·</span>
-              <button type="button" onClick={copyEmail} className="hover:text-ctp-text transition-colors">email</button>
+              <button type="button" onClick={copyEmail} className="link-underline hover:text-ctp-text transition-colors">email</button>
               <span className="text-ctp-surface1">·</span>
-              <a href="/uliResume.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-ctp-text transition-colors">resume</a>
+              <a href="/uliResume.pdf" target="_blank" rel="noopener noreferrer" className="link-underline hover:text-ctp-text transition-colors">resume</a>
             </div>
           </section>
 
@@ -203,13 +203,13 @@ export default function HomePage() {
               </button>
             </div>
             <div className="flex items-center gap-5 text-xs text-ctp-overlay0">
-              <a href="https://github.com/UlissesMolina" target="_blank" rel="noopener noreferrer" className="hover:text-ctp-text transition-colors">
+              <a href="https://github.com/UlissesMolina" target="_blank" rel="noopener noreferrer" className="link-underline hover:text-ctp-text transition-colors">
                 github
               </a>
-              <a href="https://www.linkedin.com/in/ulissesmolina" target="_blank" rel="noopener noreferrer" className="hover:text-ctp-text transition-colors">
+              <a href="https://www.linkedin.com/in/ulissesmolina" target="_blank" rel="noopener noreferrer" className="link-underline hover:text-ctp-text transition-colors">
                 linkedin
               </a>
-              <a href="/uliResume.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-ctp-text transition-colors">
+              <a href="/uliResume.pdf" target="_blank" rel="noopener noreferrer" className="link-underline hover:text-ctp-text transition-colors">
                 resume
               </a>
             </div>
