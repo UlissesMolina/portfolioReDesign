@@ -166,60 +166,7 @@
 
 
 /* ── palette preset picker (labeled) ── */
-.palette-grid-labeled {
-  display: flex;
-  justify-content: space-evenly;
-}
 
-.palette-dot-labeled {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.palette-dot-labeled:hover {
-  transform: scale(1.08);
-}
-
-.palette-highlight-ring {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  border: 1.5px solid transparent;
-  pointer-events: none;
-  z-index: 1;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.35s ease,
-              box-shadow 0.35s ease;
-}
-
-.palette-swatch-lg {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  position: relative;
-}
-
-.palette-label {
-  font-size: 9px;
-  font-family: inherit;
-  color: rgb(var(--ctp-overlay0));
-  transition: color 0.2s ease;
-  line-height: 1;
-}
-
-.palette-label.is-active {
-  color: rgb(var(--ctp-accent));
-}
 
 @layer base {
   html {
@@ -280,7 +227,8 @@
               border-color 0.3s ease,
               fill 0.3s ease,
               stroke 0.3s ease,
-              box-shadow 0.3s ease !important;
+              box-shadow 0.3s ease,
+              transform 0.3s ease !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -602,6 +550,23 @@
   pointer-events: none;
 }
 
+/* album art replaces the accent label in the vinyl center */
+.vinyl-has-art {
+  overflow: hidden;
+}
+
+.vinyl-has-art::after {
+  inset: unset;
+  width: 42%;
+  height: 42%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--vinyl-art) center/cover no-repeat;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
 .vinyl-spinning {
   animation: vinyl-spin 2.5s linear infinite;
 }
@@ -665,68 +630,6 @@
   height: 3px;
 }
 
-/* ── theme segmented control ── */
-.theme-segmented {
-  display: flex;
-  position: relative;
-  width: 100%;
-  background: rgb(var(--ctp-crust));
-  border-radius: 8px;
-  padding: 3px;
-  border: 1px solid rgb(var(--ctp-surface0));
-  transition: background-color 0.35s ease, border-color 0.35s ease;
-}
-
-.theme-segmented-indicator {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: calc(50% - 3px);
-  height: calc(100% - 6px);
-  background: rgb(var(--ctp-surface0));
-  border-radius: 6px;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-              background-color 0.35s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  z-index: 0;
-}
-
-.theme-segmented-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 0;
-  font-size: 11px;
-  font-family: inherit;
-  color: rgb(var(--ctp-overlay0));
-  background: none;
-  border: none;
-  cursor: pointer;
-  position: relative;
-  z-index: 1;
-  border-radius: 6px;
-  transition: color 0.25s ease;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.theme-segmented-btn:hover:not(.is-active) {
-  color: rgb(var(--ctp-subtext0));
-}
-
-.theme-segmented-btn.is-active {
-  color: rgb(var(--ctp-accent));
-}
-
-.theme-segmented-btn svg {
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.theme-segmented-btn.is-active svg {
-  transform: rotate(-15deg) scale(1.1);
-}
 
 /* ── project card hover — accent bar brightens + lift ── */
 .project-card {
@@ -781,14 +684,4 @@ button:hover > .arrow-nudge {
   transform: translate(1.5px, -1.5px);
 }
 
-/* ── theme swatch pulse on active ── */
-@keyframes swatch-pulse {
-  0% { box-shadow: 0 0 0 0 currentColor; }
-  70% { box-shadow: 0 0 0 6px transparent; }
-  100% { box-shadow: 0 0 0 0 transparent; }
-}
-
-.palette-dot-labeled.is-active .palette-swatch-lg {
-  animation: swatch-pulse 0.4s ease-out;
-}
 

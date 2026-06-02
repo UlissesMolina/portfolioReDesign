@@ -8,7 +8,7 @@ const TOKEN_URL = "https://accounts.spotify.com/api/token";
 const NOW_PLAYING_URL =
   "https://api.spotify.com/v1/me/player/currently-playing";
 const RECENTLY_PLAYED_URL =
-  "https://api.spotify.com/v1/me/player/recently-played?limit=1";
+  "https://api.spotify.com/v1/me/player/recently-played?limit=3";
 
 const headers = { "Content-Type": "application/json" };
 
@@ -42,8 +42,26 @@ export default async (_req: Request, _context: Context) => {
     const token = await getAccessToken();
     const auth = { Authorization: `Bearer ${token}` };
 
-    // try currently playing
-    const nowRes = await fetch(NOW_PLAYING_URL, { headers: auth });
+    // fetch currently playing and recently played in parallel
+    const [nowRes, recentRes] = await Promise.all([
+      fetch(NOW_PLAYING_URL, { headers: auth }),
+      fetch(RECENTLY_PLAYED_URL, { headers: auth }),
+    ]);
+
+    // parse recent tracks
+    const recentTracks: { track: string; artist: string }[] = [];
+    if (recentRes.status === 200) {
+      const recentData = await recentRes.json();
+      for (const entry of recentData.items ?? []) {
+        const t = entry.track;
+        if (t) {
+          recentTracks.push({
+            track: t.name,
+            artist: t.artists.map((a: { name: string }) => a.name).join(", "),
+          });
+        }
+      }
+    }
 
     if (nowRes.status === 200) {
       const data = await nowRes.json();
@@ -56,37 +74,26 @@ export default async (_req: Request, _context: Context) => {
             artist: data.item.artists
               .map((a: { name: string }) => a.name)
               .join(", "),
+            albumArt: data.item.album?.images?.[0]?.url ?? null,
+            spotifyUrl: data.item.external_urls?.spotify ?? null,
             progressMs: data.progress_ms,
             durationMs: data.item.duration_ms,
+            recentTracks,
           }),
           { headers }
         );
       }
     }
 
-    // not playing — get last played track
-    const recentRes = await fetch(RECENTLY_PLAYED_URL, { headers: auth });
-
-    if (recentRes.status === 200) {
-      const recentData = await recentRes.json();
-      const item = recentData.items?.[0]?.track;
-
-      if (item) {
-        return new Response(
-          JSON.stringify({
-            isPlaying: false,
-            lastTrack: item.name,
-            lastArtist: item.artists
-              .map((a: { name: string }) => a.name)
-              .join(", "),
-          }),
-          { headers }
-        );
-      }
-    }
-
+    // not playing — use first recent track as lastTrack
+    const lastItem = recentTracks[0];
     return new Response(
-      JSON.stringify({ isPlaying: false }),
+      JSON.stringify({
+        isPlaying: false,
+        lastTrack: lastItem?.track,
+        lastArtist: lastItem?.artist,
+        recentTracks,
+      }),
       { headers }
     );
   } catch {

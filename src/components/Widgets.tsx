@@ -7,17 +7,22 @@ interface SpotifyData {
   isPlaying: boolean;
   track?: string;
   artist?: string;
+  albumArt?: string;
+  spotifyUrl?: string;
   progressMs?: number;
   durationMs?: number;
   lastTrack?: string;
   lastArtist?: string;
+  recentTracks?: { track: string; artist: string }[];
 }
 
 interface CommitData {
   repo: string;
+  repoFullName: string;
   repoLang: string | null;
   message: string;
   timestamp: string;
+  sha: string;
   additions?: number;
   deletions?: number;
 }
@@ -102,34 +107,15 @@ export function initTheme() {
 
 export function ThemeWidget() {
   const [active, setActive] = useState<PresetId>(getStoredPreset);
-  const gridRef = useRef<HTMLDivElement>(null);
-  const [highlight, setHighlight] = useState<{left: number; top: number; color: string} | null>(null);
-  const initialised = useRef(false);
 
   const pick = (id: PresetId) => {
     setActive(id);
     applyThemeById(id, true);
   };
 
-  // measure the active swatch position and update the sliding highlight
-  useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-    const idx = PRESETS.findIndex(p => p.id === active);
-    const btn = grid.children[idx + 1] as HTMLElement | undefined; // +1 for the highlight div
-    if (!btn) return;
-    const swatch = btn.querySelector('.palette-swatch-lg') as HTMLElement | null;
-    if (!swatch) return;
-
-    const preset = PRESETS[idx];
-    const gridRect = grid.getBoundingClientRect();
-    const swatchRect = swatch.getBoundingClientRect();
-    const left = swatchRect.left - gridRect.left - 3;
-    const top = swatchRect.top - gridRect.top - 3;
-
-    initialised.current = true;
-    setHighlight({ left, top, color: preset.accentHex });
-  }, [active]);
+  const activeIdx = PRESETS.findIndex(p => p.id === active);
+  const activeColor = PRESETS[activeIdx]?.accentHex ?? '#cba6f7';
+  const count = PRESETS.length;
 
   return (
     <div className="widget">
@@ -141,53 +127,33 @@ export function ThemeWidget() {
         <span className="text-[11px] text-ctp-overlay0">theme</span>
       </div>
 
-      <div className="palette-grid-labeled" ref={gridRef} role="radiogroup" aria-label="Theme selection" style={{ position: 'relative' }}>
-        {/* sliding highlight ring */}
-        {highlight && (
-          <div
-            className="palette-highlight-ring"
-            style={{
-              transform: `translate(${highlight.left}px, ${highlight.top}px)`,
-              borderColor: highlight.color,
-              boxShadow: `0 0 8px ${highlight.color}30`,
-            }}
-          />
-        )}
-        {PRESETS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            role="radio"
-            aria-checked={active === p.id}
-            onClick={() => pick(p.id)}
-            className={`palette-dot-labeled ${active === p.id ? 'is-active' : ''}`}
-          >
-            <div
-              className="palette-swatch-lg"
-              style={{
-                backgroundColor: p.bg,
-                border: '1px solid rgba(255,255,255,0.06)',
-                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.25)',
-              }}
+      <div className="relative flex items-center rounded-md p-1 ring-1 ring-ctp-surface0" role="radiogroup" aria-label="Theme selection">
+        {/* sliding indicator */}
+        <div
+          className="absolute top-1 bottom-1 rounded-[5px] bg-ctp-base shadow-sm transition-all duration-300 ease-out"
+          style={{
+            width: `calc((100% - 8px) / ${count})`,
+            transform: `translateX(calc(${activeIdx} * 100%))`,
+            boxShadow: `inset 0 0 0 1px ${activeColor}60`,
+          }}
+        />
+        {PRESETS.map((p) => {
+          const isActive = active === p.id;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              role="radio"
+              aria-checked={isActive}
+              onClick={() => pick(p.id)}
+              className={`relative z-10 flex-1 cursor-pointer rounded-[5px] px-2 py-1.5 text-center text-[10px] font-medium transition-colors duration-300 ${
+                isActive ? 'text-ctp-text' : 'text-ctp-overlay0 hover:text-ctp-subtext0'
+              }`}
             >
-              <span
-                style={{
-                  position: 'absolute',
-                  bottom: 2,
-                  right: 2,
-                  width: 7,
-                  height: 7,
-                  borderRadius: '2.5px',
-                  backgroundColor: p.accentHex,
-                  boxShadow: `0 0 0 1px ${p.bg}`,
-                }}
-              />
-            </div>
-            <span className={`palette-label ${active === p.id ? 'is-active' : ''}`}>
               {p.label.toLowerCase()}
-            </span>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -210,9 +176,17 @@ function saveLastTrack(track: string, artist: string) {
   localStorage.setItem(LAST_TRACK_KEY, JSON.stringify({ track, artist }));
 }
 
+function formatMs(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return `${min}:${sec.toString().padStart(2, '0')}`;
+}
+
 export function NowPlayingWidget() {
   const [data, setData] = useState<SpotifyData | null>(null);
   const [progress, setProgress] = useState(0);
+  const [elapsedMs, setElapsedMs] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
@@ -239,6 +213,7 @@ export function NowPlayingWidget() {
           setData(json);
           if (json.isPlaying && json.progressMs && json.durationMs) {
             setProgress((json.progressMs / json.durationMs) * 100);
+            setElapsedMs(json.progressMs);
           }
         } else {
           const saved = loadLastTrack();
@@ -263,7 +238,7 @@ export function NowPlayingWidget() {
     return () => clearInterval(intervalRef.current);
   }, []);
 
-  // animate progress bar locally between polls
+  // animate progress bar + elapsed time locally between polls
   useEffect(() => {
     if (!data?.isPlaying || !data.durationMs) return;
 
@@ -272,6 +247,7 @@ export function NowPlayingWidget() {
         const increment = (1000 / data.durationMs!) * 100;
         return Math.min(prev + increment, 100);
       });
+      setElapsedMs((prev) => Math.min(prev + 1000, data.durationMs!));
     }, 1000);
 
     return () => clearInterval(tick);
@@ -280,11 +256,7 @@ export function NowPlayingWidget() {
   const isPlaying = data?.isPlaying && data.track;
   const hasLastTrack = data && !data.isPlaying && data.lastTrack;
 
-  const recentTracks = [
-    { track: 'Luther', artist: 'Kendrick Lamar' },
-    { track: 'Runaway', artist: 'Kanye West' },
-    { track: 'Pink + White', artist: 'Frank Ocean' },
-  ];
+  const recentTracks = data?.recentTracks ?? [];
 
   return (
     <div className="widget h-full flex flex-col">
@@ -303,9 +275,15 @@ export function NowPlayingWidget() {
 
       {isPlaying ? (
         <div className="flex items-center gap-3">
-          <div className="vinyl-record vinyl-spinning" />
+          <div className={`vinyl-record vinyl-spinning ${data.albumArt ? 'vinyl-has-art' : ''}`}
+            style={data.albumArt ? { ['--vinyl-art' as string]: `url(${data.albumArt})` } : undefined}
+          />
           <div className="flex flex-col flex-1 min-w-0">
-            <p className="text-xs text-ctp-text truncate mb-0.5">{data.track}</p>
+            {data.spotifyUrl ? (
+              <a href={data.spotifyUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-ctp-text truncate mb-0.5 hover:text-ctp-accent transition-colors no-underline">{data.track}</a>
+            ) : (
+              <p className="text-xs text-ctp-text truncate mb-0.5">{data.track}</p>
+            )}
             <p className="text-[11px] text-ctp-overlay0 truncate">{data.artist}</p>
             <div className="h-[3px] rounded-full bg-ctp-surface0 overflow-hidden mt-2">
               <div
@@ -313,6 +291,12 @@ export function NowPlayingWidget() {
                 style={{ width: `${progress}%` }}
               />
             </div>
+            {data.durationMs && (
+              <div className="flex justify-between mt-1">
+                <span className="text-[9px] text-ctp-overlay0">{formatMs(elapsedMs)}</span>
+                <span className="text-[9px] text-ctp-overlay0">{formatMs(data.durationMs)}</span>
+              </div>
+            )}
           </div>
         </div>
       ) : hasLastTrack ? (
@@ -332,19 +316,21 @@ export function NowPlayingWidget() {
       )}
 
       {/* recently played */}
-      <div className="mt-auto pt-2.5 border-t border-ctp-surface0/50">
-        <p className="text-[10px] text-ctp-overlay0 mb-1.5">recently played</p>
-        <div className="space-y-1">
-          {recentTracks.map((t, i) => (
-            <div key={i} className="flex items-center gap-1.5 text-[11px]">
-              <span className="text-ctp-overlay0">♪</span>
-              <span className="text-ctp-subtext0 truncate">{t.track}</span>
-              <span className="text-ctp-overlay0">·</span>
-              <span className="text-ctp-overlay0 truncate">{t.artist}</span>
-            </div>
-          ))}
+      {recentTracks.length > 0 && (
+        <div className="mt-auto pt-2.5 border-t border-ctp-surface0/50">
+          <p className="text-[10px] text-ctp-overlay0 mb-1.5">recently played</p>
+          <div className="space-y-1">
+            {recentTracks.map((t, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-[11px]">
+                <span className="text-ctp-overlay0">♪</span>
+                <span className="text-ctp-subtext0 truncate">{t.track}</span>
+                <span className="text-ctp-overlay0">·</span>
+                <span className="text-ctp-overlay0 truncate">{t.artist}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -529,12 +515,14 @@ export function RecentCommitsWidget() {
             `https://api.github.com/repos/${repo.full_name}/commits?per_page=2`
           );
           if (!res.ok) return [];
-          const data: { commit: { message: string; author: { date: string } } }[] = await res.json();
+          const data: { sha: string; commit: { message: string; author: { date: string } } }[] = await res.json();
           return data.map((c) => ({
             repo: repo.name,
+            repoFullName: repo.full_name,
             repoLang: repo.language,
             message: c.commit.message.split('\n')[0],
             timestamp: c.commit.author.date,
+            sha: c.sha,
           }));
         })
       );
@@ -605,7 +593,7 @@ export function RecentCommitsWidget() {
         <>
           <div className="space-y-1.5 flex-1">
             {commits.map((c, i) => (
-              <div key={i} className="text-[11px] leading-[1.5]">
+              <a key={i} href={`https://github.com/${c.repoFullName}/commit/${c.sha}`} target="_blank" rel="noopener noreferrer" className="block text-[11px] leading-[1.5] no-underline">
                 <div className="flex items-center gap-1.5">
                   <span className="text-ctp-overlay0">main ·</span>
                   <span className="text-ctp-yellow">{c.repo}</span>
@@ -620,7 +608,7 @@ export function RecentCommitsWidget() {
                     </span>
                   )}
                 </div>
-              </div>
+              </a>
             ))}
           </div>
 

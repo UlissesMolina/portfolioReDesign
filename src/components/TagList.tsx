@@ -17,7 +17,7 @@ export default function TagList({ tags }: { tags: Tag[] }) {
       {tags.map((tag) => (
         <span
           key={tag.label}
-          className={`text-[10px] px-2 py-0.5 rounded-full ${tagBgMap[tag.color] || 'bg-ctp-surface0/50 text-ctp-overlay0'}`}
+          className={`text-[10px] px-2 py-0.5 rounded-full transition-transform duration-150 hover:scale-110 ${tagBgMap[tag.color] || 'bg-ctp-surface0/50 text-ctp-overlay0'}`}
         >
           {tag.label}
         </span>
