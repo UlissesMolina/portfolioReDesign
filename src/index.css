@@ -259,7 +259,6 @@
 .widget:hover {
   border-color: rgb(var(--ctp-accent) / 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 0 12px rgb(var(--ctp-accent) / 0.06);
 }
 
 
@@ -273,16 +272,6 @@
   pointer-events: none;
   opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-}
-
-/* ── blinking cursor ── */
-@keyframes cursor-blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-.cursor-blink {
-  animation: cursor-blink 1s step-end infinite;
 }
 
 /* ── bento grid ── */
@@ -304,53 +293,7 @@
   }
 }
 
-/* ── animations ── */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-[data-animate] {
-  opacity: 0;
-  animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-[data-animate="fade"] {
-  animation-name: fade-in;
-}
-
-[data-animate-delay="1"] { animation-delay: 80ms; }
-[data-animate-delay="2"] { animation-delay: 160ms; }
-[data-animate-delay="3"] { animation-delay: 240ms; }
-[data-animate-delay="4"] { animation-delay: 320ms; }
-[data-animate-delay="5"] { animation-delay: 400ms; }
-[data-animate-delay="6"] { animation-delay: 480ms; }
-[data-animate-delay="7"] { animation-delay: 560ms; }
-
-/* scroll-triggered reveal */
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
-}
-
-[data-reveal].is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+/* animations now handled by framer motion */
 
 /* ── vinyl record ── */
 @keyframes vinyl-spin {
@@ -639,7 +582,6 @@
 .project-card:hover {
   border-color: rgb(var(--ctp-accent) / 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 0 12px rgb(var(--ctp-accent) / 0.06);
 }
 
 .project-card .accent-bar {

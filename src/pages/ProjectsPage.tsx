@@ -1,7 +1,16 @@
-import { useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { projects } from '../data';
 import TagList from '../components/TagList';
 import type { Project } from '../data';
+
+const scrollReveal = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
 function ProjectRow({ project }: { project: Project }) {
   const statusColor =
@@ -53,59 +62,44 @@ function ProjectRow({ project }: { project: Project }) {
   );
 }
 
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
 export default function ProjectsPage() {
-  const listRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const raf = requestAnimationFrame(() => {
-      const els = listRef.current?.querySelectorAll<HTMLElement>('[data-reveal]');
-      if (!els?.length) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.05, rootMargin: '0px 0px -20px 0px' },
-      );
-
-      els.forEach((el) => observer.observe(el));
-      cleanupRef.current = () => observer.disconnect();
-    });
-
-    const cleanupRef = { current: () => {} };
-    return () => {
-      cancelAnimationFrame(raf);
-      cleanupRef.current();
-    };
-  }, []);
-
   return (
-    <div ref={listRef} className="mx-auto max-w-content w-full px-8">
-      <section className="pt-20 pb-16">
-        <div className="flex items-center gap-4 mb-10" data-reveal>
+    <div className="mx-auto max-w-content w-full px-8">
+      <motion.section
+        className="pt-20 pb-16"
+        initial="hidden"
+        animate="visible"
+        variants={stagger}
+      >
+        <motion.div className="flex items-center gap-4 mb-10" variants={fadeUp}>
           <h1 className="text-xs font-medium text-ctp-overlay0 tracking-widest shrink-0">
             projects
           </h1>
           <div className="divider-line" />
-        </div>
+        </motion.div>
 
-        <div className="flex flex-col gap-3">
-          {projects.map((project, i) => (
-            <div
-              key={project.slug}
-              data-reveal
-              style={{ transitionDelay: `${i * 80}ms` }}
-            >
+        <motion.div className="flex flex-col gap-3" variants={stagger}>
+          {projects.map((project) => (
+            <motion.div key={project.slug} variants={fadeUp}>
               <ProjectRow project={project} />
-            </div>
+            </motion.div>
           ))}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
     </div>
   );
 }
