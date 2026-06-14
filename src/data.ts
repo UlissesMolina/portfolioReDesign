@@ -110,8 +110,42 @@ export const projects: Project[] = [
     buildTime: '2025',
   },
   {
-    slug: 'enterprise',
-    title: 'enterprise ai',
+    slug: 'tiger-scheduler',
+    title: 'tiger scheduler',
+    status: 'shipped',
+    description: 'Auto-register tool for Auburn University course scheduling. Automates seat monitoring and registration.',
+    longDescription:
+      'Auto-register tool for Auburn University course scheduling. Automates seat monitoring and registration.',
+    tags: [
+      { label: 'python', color: 'green' },
+      { label: 'selenium', color: 'teal' },
+    ],
+    image: '/auburn.png',
+    githubUrl: 'https://github.com/UlissesMolina/Tiger-Scheduler-Course-Auto-Register-Tool',
+    demoUrl: null,
+    year: '2025',
+    buildTime: '2025',
+  },
+  {
+    slug: 'audaz',
+    title: 'audaz',
+    status: 'shipped',
+    description: 'Chess engine in C++. Move generator, alpha-beta search, evaluation function. Bitboards.',
+    longDescription:
+      'Chess engine in C++. Move generator, alpha-beta search, evaluation function. Bitboards.',
+    tags: [
+      { label: 'c++', color: 'red' },
+      { label: 'cmake', color: 'teal' },
+    ],
+    image: '/audaz.png',
+    githubUrl: 'https://github.com/UlissesMolina/ChessBot',
+    demoUrl: null,
+    year: '2025',
+    buildTime: '2025',
+  },
+  {
+    slug: 'expense-flow',
+    title: 'expense flow',
     status: 'shipped',
     description: 'REST API for expense report submissions. JWT auth, role-based access, multi-step approval workflow.',
     longDescription:
@@ -146,44 +180,10 @@ export const projects: Project[] = [
     year: '2025',
     buildTime: '2025',
   },
-  {
-    slug: 'audaz',
-    title: 'audaz',
-    status: 'shipped',
-    description: 'Chess engine in C++. Move generator, alpha-beta search, evaluation function. Bitboards.',
-    longDescription:
-      'Chess engine in C++. Move generator, alpha-beta search, evaluation function. Bitboards.',
-    tags: [
-      { label: 'c++', color: 'red' },
-      { label: 'cmake', color: 'teal' },
-    ],
-    image: '/audaz.png',
-    githubUrl: 'https://github.com/UlissesMolina/ChessBot',
-    demoUrl: null,
-    year: '2025',
-    buildTime: '2025',
-  },
-  {
-    slug: 'tiger-scheduler',
-    title: 'tiger scheduler',
-    status: 'shipped',
-    description: 'Auto-register tool for Auburn University course scheduling. Automates seat monitoring and registration.',
-    longDescription:
-      'Auto-register tool for Auburn University course scheduling. Automates seat monitoring and registration.',
-    tags: [
-      { label: 'python', color: 'green' },
-      { label: 'selenium', color: 'teal' },
-    ],
-    image: '/auburn.png',
-    githubUrl: 'https://github.com/UlissesMolina/Tiger-Scheduler-Course-Auto-Register-Tool',
-    demoUrl: null,
-    year: '2025',
-    buildTime: '2025',
-  },
 ];
 
 // featured projects shown on homepage (slugs)
-export const FEATURED_SLUGS = ['trackr', 'enterprise'];
+export const FEATURED_SLUGS = ['trackr', 'tiger-scheduler'];
 export const featuredProjects = projects.filter((p) =>
   FEATURED_SLUGS.includes(p.slug),
 );

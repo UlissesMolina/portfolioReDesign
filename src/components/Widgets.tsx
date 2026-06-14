@@ -284,7 +284,7 @@ export function NowPlayingWidget() {
             ) : (
               <p className="text-xs text-ctp-text truncate mb-0.5">{data.track}</p>
             )}
-            <p className="text-[11px] text-ctp-overlay0 truncate">{data.artist}</p>
+            <p className="text-[11px] text-ctp-subtext0 truncate">{data.artist}</p>
             <div className="h-[3px] rounded-full bg-ctp-surface0 overflow-hidden mt-2">
               <div
                 className="h-full bg-ctp-accent rounded-full transition-[width] duration-1000 ease-linear"
@@ -293,8 +293,8 @@ export function NowPlayingWidget() {
             </div>
             {data.durationMs && (
               <div className="flex justify-between mt-1">
-                <span className="text-[9px] text-ctp-overlay0">{formatMs(elapsedMs)}</span>
-                <span className="text-[9px] text-ctp-overlay0">{formatMs(data.durationMs)}</span>
+                <span className="text-[9px] text-ctp-subtext0">{formatMs(elapsedMs)}</span>
+                <span className="text-[9px] text-ctp-subtext0">{formatMs(data.durationMs)}</span>
               </div>
             )}
           </div>
@@ -303,9 +303,9 @@ export function NowPlayingWidget() {
         <div className="flex items-center gap-3">
           <div className="vinyl-record vinyl-stopped" />
           <div className="flex flex-col flex-1 min-w-0">
-            <p className="text-[11px] text-ctp-overlay0 italic mb-1">last played</p>
+            <p className="text-[11px] text-ctp-subtext0 italic mb-1">last played</p>
             <p className="text-xs text-ctp-text truncate mb-0.5">{data.lastTrack}</p>
-            <p className="text-[11px] text-ctp-overlay0 truncate">{data.lastArtist}</p>
+            <p className="text-[11px] text-ctp-subtext0 truncate">{data.lastArtist}</p>
           </div>
         </div>
       ) : (
@@ -454,7 +454,7 @@ export function LocationWidget() {
       </div>
 
       <p className="text-xs text-ctp-text mb-1">Auburn, AL</p>
-      <p className="text-[10px] text-ctp-overlay0 mb-3 tracking-wide">32.6099° N, 85.4808° W</p>
+      <p className="text-[10px] text-ctp-subtext0 mb-3 tracking-wide">32.6099° N, 85.4808° W</p>
       <p className="text-[11px] text-ctp-subtext0 mb-3">{time} · CST</p>
 
       <div className="flex items-center gap-1.5 mt-auto">
@@ -593,21 +593,43 @@ export function RecentCommitsWidget() {
         <>
           <div className="space-y-1.5 flex-1">
             {commits.map((c, i) => (
-              <a key={i} href={`https://github.com/${c.repoFullName}/commit/${c.sha}`} target="_blank" rel="noopener noreferrer" className="block text-[11px] leading-[1.5] no-underline">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-ctp-overlay0">main ·</span>
-                  <span className="text-ctp-yellow">{c.repo}</span>
+              <a
+                key={i}
+                href={`https://github.com/${c.repoFullName}/commit/${c.sha}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-2 text-[11px] leading-[1.5] no-underline group"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-ctp-overlay0">main ·</span>
+                    <span className="text-ctp-yellow group-hover:text-ctp-yellow/90">{c.repo}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-ctp-text truncate flex-1 group-hover:text-ctp-subtext0 transition-colors">{c.message}</span>
+                    {c.additions !== undefined && (
+                      <span className="shrink-0 text-[9px]">
+                        <span className="text-ctp-green">+{c.additions}</span>
+                        {' '}
+                        <span className="text-ctp-red">-{c.deletions}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-ctp-text truncate flex-1">{c.message}</span>
-                  {c.additions !== undefined && (
-                    <span className="shrink-0 text-[9px]">
-                      <span className="text-ctp-green">+{c.additions}</span>
-                      {' '}
-                      <span className="text-ctp-red">-{c.deletions}</span>
-                    </span>
-                  )}
-                </div>
+                <svg
+                  className="w-3 h-3 shrink-0 mt-0.5 text-ctp-overlay0 group-hover:text-ctp-accent transition-colors"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <path d="M15 3h6v6" />
+                  <path d="M10 14 21 3" />
+                </svg>
               </a>
             ))}
           </div>

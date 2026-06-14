@@ -91,13 +91,13 @@ export default function HomePage() {
               <span className="text-ctp-overlay0">//</span> software engineer · auburn university
             </motion.p>
             <motion.h1 variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-[32px] leading-tight font-medium text-ctp-text mb-5">
-              Ulisses molina<span className="text-ctp-accent">.</span>
+              ulisses molina<span className="text-ctp-accent">.</span>
             </motion.h1>
             <motion.p variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-sm text-ctp-subtext1 leading-relaxed max-w-[56ch]">
               Software engineering intern @ OCV LLC. Studying at Auburn University. Interested in full-stack development or AI development. Feel free to{' '}
               <button type="button" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="text-ctp-accent hover:text-ctp-accent/80 transition-colors">reach out</button>!
             </motion.p>
-            <motion.div variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="flex items-center gap-4 mt-4 text-xs text-ctp-overlay0">
+            <motion.div variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="flex items-center gap-4 mt-4 text-xs text-ctp-subtext0">
               <a href={`https://github.com/${GITHUB_USERNAME}`} target="_blank" rel="noopener noreferrer" className="link-underline hover:text-ctp-text transition-colors">github</a>
               <span className="text-ctp-surface1">·</span>
               <a href="https://www.linkedin.com/in/ulissesmolina" target="_blank" rel="noopener noreferrer" className="link-underline hover:text-ctp-text transition-colors">linkedin</a>
@@ -165,7 +165,7 @@ export default function HomePage() {
                     <span className="text-ctp-overlay0">@</span>{' '}
                     <span className="text-ctp-peach">{exp.company}</span>
                   </p>
-                  <p className="text-[11px] text-ctp-overlay0 shrink-0 tracking-wide">
+                  <p className="text-[11px] text-ctp-subtext0 shrink-0 tracking-wide">
                     {exp.period}
                   </p>
                 </div>
@@ -242,7 +242,7 @@ export default function HomePage() {
                 {EMAIL}
               </button>
             </div>
-            <div className="flex items-center gap-5 text-xs text-ctp-overlay0">
+            <div className="flex items-center gap-5 text-xs text-ctp-subtext0">
               <a href="https://github.com/UlissesMolina" target="_blank" rel="noopener noreferrer" className="link-underline hover:text-ctp-text transition-colors">
                 github
               </a>
@@ -256,7 +256,7 @@ export default function HomePage() {
           </div>
 
           {/* status bar */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-ctp-overlay0 border-t border-ctp-surface0/30 pt-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-ctp-subtext0 border-t border-ctp-surface0/30 pt-4">
             <span>© 2026 Ulisses Molina</span>
             <FooterClock />
           </div>

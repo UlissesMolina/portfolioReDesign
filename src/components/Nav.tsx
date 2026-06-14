@@ -58,7 +58,7 @@ export default function Nav() {
               className={`text-xs transition-colors ${
                 link.active
                   ? 'text-ctp-text'
-                  : 'text-ctp-overlay0 hover:text-ctp-text'
+                  : 'text-ctp-subtext0 hover:text-ctp-text'
               }`}
             >
               {link.label}
@@ -70,7 +70,7 @@ export default function Nav() {
         <button
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}
-          className="sm:hidden text-ctp-overlay0 hover:text-ctp-text transition-colors p-1"
+          className="sm:hidden text-ctp-subtext0 hover:text-ctp-text transition-colors p-1"
           aria-label={menuOpen ? 'close menu' : 'open menu'}
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -101,7 +101,7 @@ export default function Nav() {
                 link.action();
                 setMenuOpen(false);
               }}
-              className="block w-full text-left py-2.5 text-xs text-ctp-overlay0 hover:text-ctp-text transition-colors"
+              className="block w-full text-left py-2.5 text-xs text-ctp-subtext0 hover:text-ctp-text transition-colors"
             >
               {link.label}
             </button>

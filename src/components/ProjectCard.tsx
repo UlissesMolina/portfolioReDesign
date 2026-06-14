@@ -23,7 +23,7 @@ export default function ProjectCard({ project }: { project: Project }) {
 
         <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-ctp-surface0/30">
           <span className="text-[10px] text-ctp-overlay0">{project.year}</span>
-          <div className="flex items-center gap-3 text-[11px] text-ctp-overlay0">
+          <div className="flex items-center gap-3 text-[11px] text-ctp-subtext0">
             {project.demoUrl && (
               <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="hover:text-ctp-text transition-colors">
                 live <span className="text-ctp-accent arrow-nudge">↗</span>
