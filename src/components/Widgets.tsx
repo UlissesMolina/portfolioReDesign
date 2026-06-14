@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { SPOTIFY_ENDPOINT, GITHUB_USERNAME } from '../data';
+import { SPOTIFY_ENDPOINT, GITHUB_USERNAME, YOUTUBE_CHANNEL, videos } from '../data';
 
 // ─── types ───────────────────────────────────────────────────────────────────
 
@@ -13,7 +13,7 @@ interface SpotifyData {
   durationMs?: number;
   lastTrack?: string;
   lastArtist?: string;
-  recentTracks?: { track: string; artist: string }[];
+  recentTracks?: { track: string; artist: string; albumArt?: string }[];
 }
 
 interface CommitData {
@@ -49,7 +49,7 @@ function timeAgo(dateStr: string): string {
 
 const THEME_KEY = 'ctp-theme';
 
-type PresetId = 'mocha' | 'tokyo-night' | 'rose-pine' | 'gruvbox' | 'nord';
+type PresetId = 'mono' | 'mocha' | 'tokyo-night' | 'rose-pine' | 'gruvbox' | 'nord';
 
 interface Preset {
   id: PresetId;
@@ -60,6 +60,7 @@ interface Preset {
 }
 
 const PRESETS: Preset[] = [
+  { id: 'mono',        label: 'Mono',        accent: '130 180 255', bg: '#050505', accentHex: '#82b4ff' },
   { id: 'mocha',       label: 'Mocha',       accent: '203 166 247', bg: '#1e1e2e', accentHex: '#cba6f7' },
   { id: 'tokyo-night', label: 'Tokyo',       accent: '187 154 247', bg: '#1a1b26', accentHex: '#bb9af7' },
   { id: 'rose-pine',   label: 'Rosé Pine',   accent: '196 167 231', bg: '#191724', accentHex: '#c4a7e7' },
@@ -74,7 +75,7 @@ function getStoredPreset(): PresetId {
     const stored = localStorage.getItem(THEME_KEY);
     if (stored && PRESET_IDS.has(stored as PresetId)) return stored as PresetId;
   } catch { /* noop */ }
-  return 'mocha';
+  return 'mono';
 }
 
 function applyThemeById(id: PresetId, animate = false) {
@@ -258,77 +259,117 @@ export function NowPlayingWidget() {
 
   const recentTracks = data?.recentTracks ?? [];
 
-  return (
-    <div className="widget h-full flex flex-col">
-      <div className="flex items-center gap-2 mb-3">
-        <svg className="w-3.5 h-3.5 text-ctp-accent shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-        </svg>
-        <span className="text-[11px] text-ctp-overlay0">now playing</span>
-        <div className={`eq-bars ${isPlaying ? '' : 'eq-bars-stopped'} ml-auto`}>
-          <div className="eq-bar" />
-          <div className="eq-bar" />
-          <div className="eq-bar" />
-          <div className="eq-bar" />
-        </div>
-      </div>
+  // get album arts from recent tracks for the stack effect
+  const stackArts = recentTracks
+    .filter((t) => t.albumArt && t.albumArt !== data?.albumArt)
+    .slice(0, 2)
+    .map((t) => t.albumArt!);
 
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div className="widget rounded-xl p-5">
       {isPlaying ? (
-        <div className="flex items-center gap-3">
-          <div className={`vinyl-record vinyl-spinning ${data.albumArt ? 'vinyl-has-art' : ''}`}
-            style={data.albumArt ? { ['--vinyl-art' as string]: `url(${data.albumArt})` } : undefined}
-          />
-          <div className="flex flex-col flex-1 min-w-0">
+        <div className="grid grid-cols-[150px_1fr] gap-6 max-sm:grid-cols-1">
+          {/* Album art stack */}
+          {data.albumArt ? (
+            <div
+              className="relative w-[150px] h-[150px] shrink-0 max-sm:w-full max-sm:h-auto max-sm:aspect-square"
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
+            >
+              {/* past album covers behind */}
+              {stackArts.map((art, i) => (
+                <img
+                  key={art}
+                  src={art}
+                  alt="recent album"
+                  className="absolute inset-0 w-full h-full rounded-xl object-cover pointer-events-none"
+                  style={{
+                    transform: hovered
+                      ? `rotate(${(i + 1) * -12}deg) translate(${(i + 1) * -42}px, ${(i + 1) * 14}px) scale(${1 - (i + 1) * 0.04})`
+                      : 'rotate(0deg) translate(0, 0) scale(1)',
+                    opacity: hovered ? 0.95 - i * 0.10 : 0,
+                    transition: `transform ${280 + i * 60}ms cubic-bezier(0.16, 1, 0.3, 1), opacity ${220 + i * 40}ms ease`,
+                    zIndex: -1 - i,
+                  }}
+                />
+              ))}
+              {/* current album */}
+              <img
+                src={data.albumArt}
+                alt={`${data.track} album art`}
+                className="relative z-10 w-full h-full rounded-xl object-cover"
+                style={{
+                  transition: 'transform 280ms cubic-bezier(0.16, 1, 0.3, 1)',
+                  transform: hovered && stackArts.length > 0 ? 'rotate(2deg) translateY(-2px)' : 'none',
+                }}
+              />
+            </div>
+          ) : (
+            <div className={`vinyl-record vinyl-spinning shrink-0`} style={{ width: 150, height: 150 }} />
+          )}
+
+          {/* Track info */}
+          <div className="flex flex-col flex-1 min-w-0 justify-center">
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`eq-bars ${isPlaying ? '' : 'eq-bars-stopped'}`}>
+                <div className="eq-bar" /><div className="eq-bar" /><div className="eq-bar" /><div className="eq-bar" />
+              </div>
+              <span className="text-[11px] text-ctp-overlay0">now playing</span>
+            </div>
+
             {data.spotifyUrl ? (
-              <a href={data.spotifyUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-ctp-text truncate mb-0.5 hover:text-ctp-accent transition-colors no-underline">{data.track}</a>
+              <a href={data.spotifyUrl} target="_blank" rel="noopener noreferrer" className="text-base font-medium text-ctp-text truncate mb-1 hover:text-ctp-accent transition-colors no-underline">{data.track}</a>
             ) : (
-              <p className="text-xs text-ctp-text truncate mb-0.5">{data.track}</p>
+              <p className="text-base font-medium text-ctp-text truncate mb-1">{data.track}</p>
             )}
-            <p className="text-[11px] text-ctp-subtext0 truncate">{data.artist}</p>
-            <div className="h-[3px] rounded-full bg-ctp-surface0 overflow-hidden mt-2">
+            <p className="text-sm text-ctp-subtext0 truncate mb-3">{data.artist}</p>
+
+            <div className="h-1 rounded-full bg-ctp-surface0 overflow-hidden">
               <div
                 className="h-full bg-ctp-accent rounded-full transition-[width] duration-1000 ease-linear"
                 style={{ width: `${progress}%` }}
               />
             </div>
             {data.durationMs && (
-              <div className="flex justify-between mt-1">
-                <span className="text-[9px] text-ctp-subtext0">{formatMs(elapsedMs)}</span>
-                <span className="text-[9px] text-ctp-subtext0">{formatMs(data.durationMs)}</span>
+              <div className="flex justify-between mt-1.5">
+                <span className="text-[10px] text-ctp-subtext0">{formatMs(elapsedMs)}</span>
+                <span className="text-[10px] text-ctp-subtext0">{formatMs(data.durationMs)}</span>
+              </div>
+            )}
+
+            {/* recently played */}
+            {recentTracks.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-ctp-surface0/50">
+                <p className="text-[10px] text-ctp-overlay0 mb-1.5">recently played</p>
+                <div className="space-y-1">
+                  {recentTracks.map((t, i) => (
+                    <div key={i} className="flex items-center gap-1.5 text-[11px]">
+                      <span className="text-ctp-overlay0">♪</span>
+                      <span className="text-ctp-subtext0 truncate">{t.track}</span>
+                      <span className="text-ctp-overlay0">·</span>
+                      <span className="text-ctp-overlay0 truncate">{t.artist}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
       ) : hasLastTrack ? (
-        <div className="flex items-center gap-3">
-          <div className="vinyl-record vinyl-stopped" />
+        <div className="flex items-center gap-4">
+          <div className="vinyl-record vinyl-stopped" style={{ width: 64, height: 64 }} />
           <div className="flex flex-col flex-1 min-w-0">
             <p className="text-[11px] text-ctp-subtext0 italic mb-1">last played</p>
-            <p className="text-xs text-ctp-text truncate mb-0.5">{data.lastTrack}</p>
+            <p className="text-sm text-ctp-text truncate mb-0.5">{data.lastTrack}</p>
             <p className="text-[11px] text-ctp-subtext0 truncate">{data.lastArtist}</p>
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-3">
-          <div className="vinyl-record vinyl-stopped" />
+        <div className="flex items-center gap-4">
+          <div className="vinyl-record vinyl-stopped" style={{ width: 64, height: 64 }} />
           <p className="text-[11px] text-ctp-overlay0 italic">silence.</p>
-        </div>
-      )}
-
-      {/* recently played */}
-      {recentTracks.length > 0 && (
-        <div className="mt-auto pt-2.5 border-t border-ctp-surface0/50">
-          <p className="text-[10px] text-ctp-overlay0 mb-1.5">recently played</p>
-          <div className="space-y-1">
-            {recentTracks.map((t, i) => (
-              <div key={i} className="flex items-center gap-1.5 text-[11px]">
-                <span className="text-ctp-overlay0">♪</span>
-                <span className="text-ctp-subtext0 truncate">{t.track}</span>
-                <span className="text-ctp-overlay0">·</span>
-                <span className="text-ctp-overlay0 truncate">{t.artist}</span>
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>
@@ -454,14 +495,71 @@ export function LocationWidget() {
       </div>
 
       <p className="text-xs text-ctp-text mb-1">Auburn, AL</p>
-      <p className="text-[10px] text-ctp-subtext0 mb-3 tracking-wide">32.6099° N, 85.4808° W</p>
-      <p className="text-[11px] text-ctp-subtext0 mb-3">{time} · CST</p>
+      <p className="text-[10px] text-ctp-subtext0 tracking-wide mb-3">{time} · CST</p>
 
       <div className="flex items-center gap-1.5 mt-auto">
         <span className="w-1.5 h-1.5 rounded-full bg-ctp-green shrink-0 animate-pulse" />
         <span className="text-[11px] text-ctp-green">open to work</span>
+        <span className="text-[10px] text-ctp-overlay0 ml-1">· SWE internships</span>
       </div>
     </div>
+  );
+}
+
+// ─── latest upload ───────────────────────────────────────────────────────────
+
+export function LatestUploadWidget() {
+  const latest = videos[0];
+  if (!latest) return null;
+
+  return (
+    <a
+      href={latest.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="widget widget-highlight h-full grid grid-cols-[240px_1fr] gap-5 items-center no-underline group max-sm:grid-cols-1 p-[18px]"
+         >
+      {/* thumbnail */}
+      <div className="video-thumbnail relative w-full aspect-video rounded-lg overflow-hidden bg-ctp-surface0/30 shrink-0">
+        <img
+          src={latest.thumbnailUrl}
+          alt={latest.title}
+          className="w-full h-full object-cover"
+          loading="lazy"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = 'none';
+          }}
+        />
+        <span className="play-pill">watch ↗</span>
+        <span className="absolute bottom-1 right-1 text-[9px] bg-ctp-base/80 text-ctp-text px-1 py-0.5 rounded font-medium z-10">
+          {latest.duration}
+        </span>
+      </div>
+
+      {/* content */}
+      <div className="flex flex-col min-w-0 flex-1">
+        <div className="flex items-center gap-1.5 mb-2">
+          <svg className="w-3.5 h-3.5 text-ctp-accent shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m22 8-6 4 6 4V8Z" /><rect width="14" height="12" x="2" y="6" rx="2" ry="2" />
+          </svg>
+          <span className="text-[11px] text-ctp-overlay0">latest upload</span>
+        </div>
+
+        <p className="text-xs text-ctp-text leading-snug mb-1 group-hover:text-ctp-accent transition-colors line-clamp-2">
+          {latest.title}
+        </p>
+        <p className="text-[10px] text-ctp-overlay0 tracking-wide">{latest.tag}</p>
+
+        <div className="flex items-center gap-1 mt-auto pt-2">
+          <span className="text-[10px] text-ctp-subtext0 group-hover:text-ctp-accent transition-colors">
+            watch on youtube
+          </span>
+          <svg className="w-2.5 h-2.5 text-ctp-subtext0 group-hover:text-ctp-accent transition-colors arrow-nudge" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M7 17 17 7" /><path d="M7 7h10v10" />
+          </svg>
+        </div>
+      </div>
+    </a>
   );
 }
 
@@ -565,95 +663,63 @@ export function RecentCommitsWidget() {
     fetchCommits();
   }, []);
 
+  // summary line
+  const commitCount = commits.length;
+  const langSummary = languages.map(l => `${l.label} ${l.percent}%`).join(' · ');
+
   return (
-    <div className="widget h-full flex flex-col">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5 text-ctp-accent shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/>
-          </svg>
-          <span className="text-[11px] text-ctp-overlay0">recent commits</span>
-        </div>
-        {latestTimestamp && (
-          <span className="text-[10px] text-ctp-overlay0">
-            {timeAgo(latestTimestamp)}
-          </span>
+    <div className="flex flex-col gap-3">
+      {/* summary */}
+      <div className="flex items-center gap-3 text-xs">
+        <span className="text-ctp-subtext1">{loading ? '...' : `${commitCount} recent commits`}</span>
+        {langSummary && <span className="text-ctp-overlay0">{langSummary}</span>}
+        {languages.length > 0 && (
+          <div className="flex rounded-full h-1.5 overflow-hidden flex-1 max-w-[140px] ml-auto">
+            {languages.map((seg, i) => (
+              <div key={i} className={`${seg.color} h-full`} style={{ width: `${seg.percent}%` }} />
+            ))}
+          </div>
         )}
       </div>
 
       {loading ? (
-        <div className="space-y-2 flex-1">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-[30px] rounded bg-ctp-surface0/30 animate-pulse" />
+        <div className="space-y-2">
+          {[0, 1].map((i) => (
+            <div key={i} className="h-[26px] rounded bg-ctp-surface0/30 animate-pulse" />
           ))}
         </div>
       ) : commits.length === 0 ? (
-        <p className="text-[11px] text-ctp-overlay0 italic">no recent commits</p>
+        <p className="text-xs text-ctp-overlay0 italic">no recent commits</p>
       ) : (
-        <>
-          <div className="space-y-1.5 flex-1">
-            {commits.map((c, i) => (
-              <a
-                key={i}
-                href={`https://github.com/${c.repoFullName}/commit/${c.sha}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start gap-2 text-[11px] leading-[1.5] no-underline group"
+        <div className="space-y-2">
+          {commits.map((c, i) => (
+            <a
+              key={i}
+              href={`https://github.com/${c.repoFullName}/commit/${c.sha}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 text-xs leading-[1.5] no-underline group"
+            >
+              <span className="text-ctp-overlay0 shrink-0">{c.repo}</span>
+              <span className="text-ctp-subtext0 truncate flex-1 group-hover:text-ctp-text transition-colors">{c.message}</span>
+              <span className="text-[10px] text-ctp-overlay0 shrink-0">{timeAgo(c.timestamp)}</span>
+              <svg
+                className="w-3 h-3 shrink-0 text-ctp-overlay0 group-hover:text-ctp-accent transition-colors"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
               >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-ctp-overlay0">main ·</span>
-                    <span className="text-ctp-yellow group-hover:text-ctp-yellow/90">{c.repo}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-ctp-text truncate flex-1 group-hover:text-ctp-subtext0 transition-colors">{c.message}</span>
-                    {c.additions !== undefined && (
-                      <span className="shrink-0 text-[9px]">
-                        <span className="text-ctp-green">+{c.additions}</span>
-                        {' '}
-                        <span className="text-ctp-red">-{c.deletions}</span>
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <svg
-                  className="w-3 h-3 shrink-0 mt-0.5 text-ctp-overlay0 group-hover:text-ctp-accent transition-colors"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <path d="M15 3h6v6" />
-                  <path d="M10 14 21 3" />
-                </svg>
-              </a>
-            ))}
-          </div>
-
-          {/* language bar + labels — always visible */}
-          {languages.length > 0 && (
-            <div className="mt-auto pt-3">
-              <div className="flex rounded-full h-1.5 overflow-hidden">
-                {languages.map((seg, i) => (
-                  <div key={i} className={`${seg.color} h-full`} style={{ width: `${seg.percent}%` }} />
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5">
-                {languages.map((seg, i) => (
-                  <span key={i} className="flex items-center gap-1 text-[9px]">
-                    <span className={`w-1.5 h-1.5 rounded-full ${seg.color} shrink-0`} />
-                    <span className={LANG_TEXT_COLORS[seg.label] || 'text-ctp-overlay0'}>{seg.label}</span>
-                    <span className="text-ctp-overlay0">{seg.percent}%</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <path d="M15 3h6v6" />
+                <path d="M10 14 21 3" />
+              </svg>
+            </a>
+          ))}
+        </div>
       )}
     </div>
   );

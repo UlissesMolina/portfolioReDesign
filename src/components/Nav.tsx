@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'motion/react';
 
 export default function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === '/';
@@ -49,19 +51,30 @@ export default function Nav() {
         </Link>
 
         {/* desktop nav */}
-        <nav className="hidden sm:flex items-center gap-6">
+        <nav
+          className="hidden sm:flex items-center gap-1 relative"
+          onMouseLeave={() => setHovered(null)}
+        >
           {links.map((link) => (
             <button
               key={link.label}
               type="button"
               onClick={link.action}
-              className={`text-xs transition-colors ${
+              onMouseEnter={() => setHovered(link.label)}
+              className={`relative z-10 px-3 py-1.5 text-xs transition-colors rounded-full ${
                 link.active
                   ? 'text-ctp-text'
                   : 'text-ctp-subtext0 hover:text-ctp-text'
               }`}
             >
-              {link.label}
+              {hovered === link.label && (
+                <motion.span
+                  layoutId="nav-pill"
+                  className="absolute inset-0 rounded-full bg-ctp-surface0/20 border border-ctp-surface0/40"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">{link.label}</span>
             </button>
           ))}
         </nav>

@@ -78,9 +78,9 @@ const fadeUp = {
 
 export default function ProjectsPage() {
   return (
-    <div className="mx-auto max-w-content w-full px-8">
+    <div>
       <motion.section
-        className="pt-20 pb-16"
+        className="section-strip pt-20 pb-16"
         initial="hidden"
         animate="visible"
         variants={stagger}

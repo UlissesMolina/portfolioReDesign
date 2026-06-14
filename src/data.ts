@@ -31,6 +31,34 @@ export interface Project {
 
 export const GITHUB_USERNAME = 'UlissesMolina';
 export const EMAIL = 'umolina2005@gmail.com';
+export const YOUTUBE_CHANNEL = 'https://www.youtube.com/@ulissesCodes';
+
+// ─── youtube ─────────────────────────────────────────────────────────────────
+
+export interface Video {
+  title: string;
+  duration: string;
+  tag: string;
+  url: string;
+  thumbnailUrl: string;
+}
+
+export const videos: Video[] = [
+  {
+    title: 'Cooked CS Student leetcodes for the first time...',
+    duration: '12:57',
+    tag: 'cs / career / leetcode',
+    url: 'https://youtu.be/fQ8wuC7N7LU',
+    thumbnailUrl: 'https://img.youtube.com/vi/fQ8wuC7N7LU/mqdefault.jpg',
+  },
+  {
+    title: 'I applied to 200 internships...',
+    duration: '10:24',
+    tag: 'cs / career / internships',
+    url: 'https://youtu.be/zriIScCLl5Y',
+    thumbnailUrl: 'https://img.youtube.com/vi/zriIScCLl5Y/mqdefault.jpg',
+  },
+];
 
 // Update this to your Spotify proxy endpoint (Cloudflare Worker / Next API route)
 // Should return { isPlaying, track, artist, progressMs, durationMs } or { isPlaying: false }

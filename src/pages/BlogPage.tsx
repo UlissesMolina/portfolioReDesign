@@ -16,8 +16,8 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <div ref={listRef} className="mx-auto max-w-content w-full px-8">
-      <section className="pt-20 pb-16">
+    <div ref={listRef}>
+      <section className="section-strip pt-20 pb-16">
         <div className="flex items-center gap-4 mb-4" data-animate data-animate-delay="1">
           <h1 className="text-xs font-medium text-ctp-overlay0 tracking-widest shrink-0">
             blog

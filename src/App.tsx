@@ -24,11 +24,13 @@ export default function App() {
       <ScrollToTop />
       <div className="min-h-screen bg-ctp-base text-ctp-text font-mono">
         <Nav />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-        </Routes>
+        <div className="page-wrapper min-h-[calc(100vh-57px)]">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+          </Routes>
+        </div>
       </div>
     </BrowserRouter>
   );

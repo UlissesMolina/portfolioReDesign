@@ -49,7 +49,7 @@ export default async (_req: Request, _context: Context) => {
     ]);
 
     // parse recent tracks
-    const recentTracks: { track: string; artist: string }[] = [];
+    const recentTracks: { track: string; artist: string; albumArt?: string }[] = [];
     if (recentRes.status === 200) {
       const recentData = await recentRes.json();
       for (const entry of recentData.items ?? []) {
@@ -58,6 +58,7 @@ export default async (_req: Request, _context: Context) => {
           recentTracks.push({
             track: t.name,
             artist: t.artists.map((a: { name: string }) => a.name).join(", "),
+            albumArt: t.album?.images?.[0]?.url ?? undefined,
           });
         }
       }
