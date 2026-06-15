@@ -90,8 +90,19 @@ export default function HomePage() {
           </svg>
           <span>Auburn, AL</span>
         </motion.p>
-        <motion.h1 variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-[44px] leading-none font-medium text-ctp-text mb-5 tracking-[-0.04em]">
-          ulisses molina<span className="text-ctp-accent">.</span>
+        <motion.h1 variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-[44px] leading-none font-medium text-ctp-text mb-5 tracking-[-0.04em] group/name">
+          {'ulisses molina'.split('').map((char, i) => (
+            <span
+              key={i}
+              className="inline-block transition-transform duration-200 ease-out group-hover/name:[animation-play-state:running]"
+              style={{
+                animation: `letter-wave 0.35s ease-out ${i * 0.03}s both paused`,
+              }}
+            >
+              {char === ' ' ? '\u00A0' : char}
+            </span>
+          ))}
+          <span className="text-ctp-accent">.</span>
         </motion.h1>
         <motion.p variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-[15px] text-ctp-subtext1 leading-[1.75] max-w-[620px]">
           Software engineering intern @ OCV LLC. Studying at Auburn University. Interested in full-stack development or AI development. Feel free to{' '}
@@ -201,7 +212,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Listening strip ── */}
-      <section className="section-strip">
+      <section className="section-strip overflow-visible">
         <motion.div
           initial="hidden"
           whileInView="visible"

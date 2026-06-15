@@ -123,6 +123,8 @@ export function toggleLightDark() {
 // ─── now playing ─────────────────────────────────────────────────────────────
 
 const LAST_TRACK_KEY = 'spotify_last_track';
+const PAST_ARTS_KEY = 'spotify_past_arts';
+const MAX_PAST_ARTS = 4;
 
 function loadLastTrack(): { track: string; artist: string } | null {
   try {
@@ -135,6 +137,21 @@ function loadLastTrack(): { track: string; artist: string } | null {
 
 function saveLastTrack(track: string, artist: string) {
   localStorage.setItem(LAST_TRACK_KEY, JSON.stringify({ track, artist }));
+}
+
+function loadPastArts(): string[] {
+  try {
+    const raw = localStorage.getItem(PAST_ARTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePastArt(artUrl: string) {
+  const arts = loadPastArts().filter((a) => a !== artUrl);
+  arts.unshift(artUrl);
+  localStorage.setItem(PAST_ARTS_KEY, JSON.stringify(arts.slice(0, MAX_PAST_ARTS)));
 }
 
 function formatMs(ms: number): string {
@@ -159,6 +176,7 @@ export function NowPlayingWidget() {
 
           if (json.isPlaying && json.track && json.artist) {
             saveLastTrack(json.track, json.artist);
+            if (json.albumArt) savePastArt(json.albumArt);
           } else if (json.lastTrack && json.lastArtist) {
             saveLastTrack(json.lastTrack, json.lastArtist);
           }
@@ -220,21 +238,28 @@ export function NowPlayingWidget() {
   const recentTracks = data?.recentTracks ?? [];
 
   // get album arts from recent tracks for the stack effect
-  const stackArts = recentTracks
+  // falls back to locally stored past album arts when API returns empty
+  let stackArts = recentTracks
     .filter((t) => t.albumArt && t.albumArt !== data?.albumArt)
     .slice(0, 2)
     .map((t) => t.albumArt!);
 
+  if (stackArts.length === 0 && data?.albumArt) {
+    stackArts = loadPastArts()
+      .filter((a) => a !== data.albumArt)
+      .slice(0, 2);
+  }
+
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div className="py-1">
+    <div className="py-1 overflow-visible">
       {isPlaying ? (
-        <div className="grid grid-cols-[150px_1fr] gap-6 max-sm:grid-cols-1">
+        <div className="grid grid-cols-[150px_1fr] gap-6 max-sm:grid-cols-1 overflow-visible">
           {/* Album art stack */}
           {data.albumArt ? (
             <div
-              className="relative w-[150px] h-[150px] shrink-0 max-sm:w-full max-sm:h-auto max-sm:aspect-square"
+              className="relative w-[150px] h-[150px] shrink-0 max-sm:w-full max-sm:h-auto max-sm:aspect-square overflow-visible"
               onMouseEnter={() => setHovered(true)}
               onMouseLeave={() => setHovered(false)}
             >
@@ -251,7 +276,7 @@ export function NowPlayingWidget() {
                       : 'rotate(0deg) translate(0, 0) scale(1)',
                     opacity: hovered ? 0.95 - i * 0.10 : 0,
                     transition: `transform ${280 + i * 60}ms cubic-bezier(0.16, 1, 0.3, 1), opacity ${220 + i * 40}ms ease`,
-                    zIndex: -1 - i,
+                    zIndex: 1 + (stackArts.length - i),
                   }}
                 />
               ))}
@@ -259,10 +284,12 @@ export function NowPlayingWidget() {
               <img
                 src={data.albumArt}
                 alt={`${data.track} album art`}
-                className="relative z-10 w-full h-full rounded-lg object-cover"
+                className="relative w-full h-full rounded-lg object-cover"
                 style={{
-                  transition: 'transform 280ms cubic-bezier(0.16, 1, 0.3, 1)',
-                  transform: hovered && stackArts.length > 0 ? 'rotate(2deg) translateY(-2px)' : 'none',
+                  zIndex: stackArts.length + 2,
+                  transition: 'transform 280ms cubic-bezier(0.16, 1, 0.3, 1), filter 280ms ease',
+                  transform: hovered ? (stackArts.length > 0 ? 'rotate(2deg) translateY(-2px)' : 'scale(1.03)') : 'none',
+                  filter: hovered ? 'brightness(1.08)' : 'brightness(1)',
                 }}
               />
             </div>

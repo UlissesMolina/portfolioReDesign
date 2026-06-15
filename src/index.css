@@ -421,6 +421,17 @@
 
 /* animations now handled by framer motion */
 
+/* ── letter wave on name hover ── */
+@keyframes letter-wave {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+.group\/name:hover span {
+  animation-play-state: running !important;
+}
+
 /* ── vinyl record ── */
 @keyframes vinyl-spin {
   from { transform: rotate(0deg); }
