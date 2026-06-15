@@ -198,6 +198,59 @@
 }
 
 
+/* ── light ── */
+[data-theme="light"] {
+  --ctp-base:      250 250 248;
+  --ctp-mantle:    243 243 241;
+  --ctp-crust:     236 236 234;
+  --ctp-text:      30 30 32;
+  --ctp-subtext1:  75 75 80;
+  --ctp-subtext0:  110 110 115;
+  --ctp-overlay0:  150 150 155;
+  --ctp-surface2:  200 200 205;
+  --ctp-surface1:  218 218 220;
+  --ctp-surface0:  232 232 230;
+  --ctp-rosewater: 80 80 80;
+  --ctp-flamingo:  90 90 90;
+  --ctp-pink:      140 90 120;
+  --ctp-mauve:     110 80 140;
+  --ctp-red:       180 60 60;
+  --ctp-peach:     180 100 40;
+  --ctp-yellow:    160 140 30;
+  --ctp-green:     60 140 60;
+  --ctp-teal:      50 140 130;
+  --ctp-sapphire:  40 120 160;
+  --ctp-blue:      50 90 160;
+  --ctp-lavender:  90 90 150;
+
+  --vinyl-groove:  #e8e8e6;
+  --vinyl-groove-alt: #ddddd8;
+  --vinyl-shine:   rgba(0, 0, 0, 0.03);
+  --selection-bg:  rgba(50, 90, 160, 0.18);
+
+  --border-color: rgba(0, 0, 0, 0.09);
+  --border-color-hover: rgba(0, 0, 0, 0.16);
+  --grid-color-v: rgba(0, 0, 0, 0.04);
+  --grid-color-h: rgba(0, 0, 0, 0.03);
+  --card-bg: rgba(0, 0, 0, 0.02);
+  --card-bg-hover: rgba(0, 0, 0, 0.035);
+}
+
+/* dark themes share the same structural colors */
+[data-theme="mono"],
+[data-theme="mocha"],
+[data-theme="tokyo-night"],
+[data-theme="rose-pine"],
+[data-theme="gruvbox"],
+[data-theme="nord"] {
+  --border-color: rgba(255, 255, 255, 0.075);
+  --border-color-hover: rgba(255, 255, 255, 0.16);
+  --grid-color-v: rgba(255, 255, 255, 0.035);
+  --grid-color-h: rgba(255, 255, 255, 0.025);
+  --card-bg: rgba(255, 255, 255, 0.015);
+  --card-bg-hover: rgba(255, 255, 255, 0.03);
+}
+
 /* ── palette preset picker (labeled) ── */
 
 
@@ -219,8 +272,8 @@
     min-width: 320px;
     min-height: 100vh;
     background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      linear-gradient(to right, var(--grid-color-v) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-color-h) 1px, transparent 1px);
     background-size: 80px 80px;
   }
 
@@ -282,8 +335,8 @@
   position: relative;
   max-width: 1040px;
   margin: 0 auto;
-  border-left: 1px solid rgba(255, 255, 255, 0.075);
-  border-right: 1px solid rgba(255, 255, 255, 0.075);
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
   background: rgb(var(--ctp-base) / 0.95);
 }
 
@@ -294,7 +347,7 @@
 /* ── section strip ── */
 .section-strip {
   padding: 36px 32px;
-  border-top: 1px solid rgba(255, 255, 255, 0.075);
+  border-top: 1px solid var(--border-color);
 }
 
 @media (max-width: 719px) {
@@ -305,28 +358,33 @@
 .divider-line {
   flex: 1;
   height: 0.5px;
-  background: rgba(255, 255, 255, 0.075);
+  background: var(--border-color);
 }
 
-/* widget / card surface */
+/* widget / card surface — used sparingly for media cards only */
 .widget {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   padding: 14px;
   transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
 }
 
 .widget:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.04);
-  transform: translateY(-2px);
+  border-color: var(--border-color-hover);
+  background: var(--card-bg-hover);
+  transform: translateY(-1px);
 }
 
-/* ── widget hierarchy ── */
-.widget-highlight {
-  border-color: rgb(var(--ctp-surface1) / 0.6);
-  padding: 16px;
+/* ── experience timeline row ── */
+.exp-row {
+  padding: 18px 0;
+  border-top: 1px solid var(--border-color);
+  transition: background 180ms ease;
+}
+
+.exp-row:hover {
+  background: var(--card-bg);
 }
 
 
@@ -648,8 +706,8 @@
 }
 
 .project-card:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-color-hover);
+  background: var(--card-bg-hover);
   transform: translateY(-2px);
 }
 
@@ -658,8 +716,8 @@
 }
 
 .project-card:hover .accent-bar {
-  opacity: 0.8;
-  width: 4px;
+  opacity: 0.7;
+  width: 3px;
 }
 
 /* ── animated underline — slide left-to-right ── */

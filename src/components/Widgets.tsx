@@ -49,23 +49,22 @@ function timeAgo(dateStr: string): string {
 
 const THEME_KEY = 'ctp-theme';
 
-type PresetId = 'mono' | 'mocha' | 'tokyo-night' | 'rose-pine' | 'gruvbox' | 'nord';
+type PresetId = 'mono' | 'light' | 'mocha' | 'tokyo-night' | 'rose-pine' | 'gruvbox' | 'nord';
 
 interface Preset {
   id: PresetId;
-  label: string;
-  accent: string;   // RGB triplet for --ctp-accent
-  bg: string;        // hex for swatch circle
-  accentHex: string; // hex for swatch pip
+  accent: string;
+  isDark: boolean;
 }
 
 const PRESETS: Preset[] = [
-  { id: 'mono',        label: 'Mono',        accent: '130 180 255', bg: '#050505', accentHex: '#82b4ff' },
-  { id: 'mocha',       label: 'Mocha',       accent: '203 166 247', bg: '#1e1e2e', accentHex: '#cba6f7' },
-  { id: 'tokyo-night', label: 'Tokyo',       accent: '187 154 247', bg: '#1a1b26', accentHex: '#bb9af7' },
-  { id: 'rose-pine',   label: 'Rosé Pine',   accent: '196 167 231', bg: '#191724', accentHex: '#c4a7e7' },
-  { id: 'gruvbox',     label: 'Gruvbox',     accent: '254 128 25',  bg: '#282828', accentHex: '#fe8019' },
-  { id: 'nord',        label: 'Nord',        accent: '136 192 208', bg: '#2e3440', accentHex: '#88c0d0' },
+  { id: 'mono',        accent: '130 180 255', isDark: true },
+  { id: 'light',       accent: '50 90 160',   isDark: false },
+  { id: 'mocha',       accent: '203 166 247', isDark: true },
+  { id: 'tokyo-night', accent: '187 154 247', isDark: true },
+  { id: 'rose-pine',   accent: '196 167 231', isDark: true },
+  { id: 'gruvbox',     accent: '254 128 25',  isDark: true },
+  { id: 'nord',        accent: '136 192 208', isDark: true },
 ];
 
 const PRESET_IDS = new Set(PRESETS.map(p => p.id));
@@ -106,58 +105,19 @@ export function initTheme() {
   applyThemeById(getStoredPreset());
 }
 
-export function ThemeWidget() {
-  const [active, setActive] = useState<PresetId>(getStoredPreset);
+/** Returns whether the current theme is dark, and a function to toggle */
+export function getThemeState(): { isDark: boolean } {
+  const id = getStoredPreset();
+  const preset = PRESETS.find(p => p.id === id);
+  return { isDark: preset?.isDark ?? true };
+}
 
-  const pick = (id: PresetId) => {
-    setActive(id);
-    applyThemeById(id, true);
-  };
-
-  const activeIdx = PRESETS.findIndex(p => p.id === active);
-  const activeColor = PRESETS[activeIdx]?.accentHex ?? '#cba6f7';
-  const count = PRESETS.length;
-
-  return (
-    <div className="widget">
-      <div className="flex items-center gap-1.5 mb-2">
-        <svg className="w-3.5 h-3.5 text-ctp-accent shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/>
-          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1-.3-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-10-10-10z"/>
-        </svg>
-        <span className="text-[11px] text-ctp-overlay0">theme</span>
-      </div>
-
-      <div className="relative flex items-center rounded-md p-1 ring-1 ring-ctp-surface0" role="radiogroup" aria-label="Theme selection">
-        {/* sliding indicator */}
-        <div
-          className="absolute top-1 bottom-1 rounded-[5px] bg-ctp-base shadow-sm transition-all duration-300 ease-out"
-          style={{
-            width: `calc((100% - 8px) / ${count})`,
-            transform: `translateX(calc(${activeIdx} * 100%))`,
-            boxShadow: `inset 0 0 0 1px ${activeColor}60`,
-          }}
-        />
-        {PRESETS.map((p) => {
-          const isActive = active === p.id;
-          return (
-            <button
-              key={p.id}
-              type="button"
-              role="radio"
-              aria-checked={isActive}
-              onClick={() => pick(p.id)}
-              className={`relative z-10 flex-1 cursor-pointer rounded-[5px] px-2 py-1.5 text-center text-[10px] font-medium transition-colors duration-300 ${
-                isActive ? 'text-ctp-text' : 'text-ctp-overlay0 hover:text-ctp-subtext0'
-              }`}
-            >
-              {p.label.toLowerCase()}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
+export function toggleLightDark() {
+  const current = getStoredPreset();
+  const preset = PRESETS.find(p => p.id === current);
+  const newId: PresetId = preset?.isDark ? 'light' : 'mono';
+  applyThemeById(newId, true);
+  return !preset?.isDark; // returns new isDark
 }
 
 // ─── now playing ─────────────────────────────────────────────────────────────
@@ -268,7 +228,7 @@ export function NowPlayingWidget() {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div className="widget rounded-xl p-5">
+    <div className="py-1">
       {isPlaying ? (
         <div className="grid grid-cols-[150px_1fr] gap-6 max-sm:grid-cols-1">
           {/* Album art stack */}
@@ -284,7 +244,7 @@ export function NowPlayingWidget() {
                   key={art}
                   src={art}
                   alt="recent album"
-                  className="absolute inset-0 w-full h-full rounded-xl object-cover pointer-events-none"
+                  className="absolute inset-0 w-full h-full rounded-lg object-cover pointer-events-none"
                   style={{
                     transform: hovered
                       ? `rotate(${(i + 1) * -12}deg) translate(${(i + 1) * -42}px, ${(i + 1) * 14}px) scale(${1 - (i + 1) * 0.04})`
@@ -299,7 +259,7 @@ export function NowPlayingWidget() {
               <img
                 src={data.albumArt}
                 alt={`${data.track} album art`}
-                className="relative z-10 w-full h-full rounded-xl object-cover"
+                className="relative z-10 w-full h-full rounded-lg object-cover"
                 style={{
                   transition: 'transform 280ms cubic-bezier(0.16, 1, 0.3, 1)',
                   transform: hovered && stackArts.length > 0 ? 'rotate(2deg) translateY(-2px)' : 'none',
@@ -486,21 +446,17 @@ export function LocationWidget() {
   }, []);
 
   return (
-    <div className="widget h-full flex flex-col justify-center">
-      <div className="flex items-center gap-1.5 mb-3">
-        <svg className="w-3.5 h-3.5 text-ctp-accent shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
-        </svg>
-        <span className="text-[11px] text-ctp-overlay0">currently</span>
-      </div>
-
-      <p className="text-xs text-ctp-text mb-1">Auburn, AL</p>
-      <p className="text-[10px] text-ctp-subtext0 tracking-wide mb-3">{time} · CST</p>
-
-      <div className="flex items-center gap-1.5 mt-auto">
-        <span className="w-1.5 h-1.5 rounded-full bg-ctp-green shrink-0 animate-pulse" />
-        <span className="text-[11px] text-ctp-green">open to work</span>
-        <span className="text-[10px] text-ctp-overlay0 ml-1">· SWE internships</span>
+    <div className="status-row">
+      <span className="status-label">status</span>
+      <div className="flex items-center gap-3 text-xs">
+        <span className="text-ctp-text">Auburn, AL</span>
+        <span className="text-ctp-overlay0">·</span>
+        <span className="text-ctp-subtext0">{time} CST</span>
+        <span className="text-ctp-overlay0">·</span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-ctp-green shrink-0 animate-pulse" />
+          <span className="text-[11px] text-ctp-green">open to work</span>
+        </span>
       </div>
     </div>
   );
@@ -517,10 +473,10 @@ export function LatestUploadWidget() {
       href={latest.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="widget widget-highlight h-full grid grid-cols-[240px_1fr] gap-5 items-center no-underline group max-sm:grid-cols-1 p-[18px]"
+      className="widget h-full grid grid-cols-[240px_1fr] gap-5 items-center no-underline group max-sm:grid-cols-1 p-[14px]"
          >
       {/* thumbnail */}
-      <div className="video-thumbnail relative w-full aspect-video rounded-lg overflow-hidden bg-ctp-surface0/30 shrink-0">
+      <div className="video-thumbnail relative w-full aspect-video rounded-md overflow-hidden bg-ctp-surface0/30 shrink-0">
         <img
           src={latest.thumbnailUrl}
           alt={latest.title}

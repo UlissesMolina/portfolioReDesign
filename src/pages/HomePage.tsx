@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { experiences, featuredProjects, EMAIL, GITHUB_USERNAME, YOUTUBE_CHANNEL } from '../data';
 import TagList from '../components/TagList';
 import ProjectCard from '../components/ProjectCard';
-import { NowPlayingWidget, RecentCommitsWidget, ThemeWidget, LocationWidget, LatestUploadWidget } from '../components/Widgets';
+import { NowPlayingWidget, RecentCommitsWidget, LatestUploadWidget } from '../components/Widgets';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -81,8 +81,14 @@ export default function HomePage() {
         animate="visible"
         variants={stagger}
       >
-        <motion.p variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-[11px] tracking-[0.2em] text-white/[0.42] mb-4">
-          <span className="text-white/[0.3]">//</span> software engineer · auburn university
+        <motion.p variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-[11px] tracking-[0.2em] text-ctp-overlay0 mb-4 flex items-center gap-1.5">
+          <span className="text-ctp-surface2">//</span>
+          <span>software engineer · auburn university</span>
+          <span className="text-ctp-surface2">·</span>
+          <svg className="w-3 h-3 text-ctp-overlay0 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>Auburn, AL</span>
         </motion.p>
         <motion.h1 variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-[44px] leading-none font-medium text-ctp-text mb-5 tracking-[-0.04em]">
           ulisses molina<span className="text-ctp-accent">.</span>
@@ -104,23 +110,6 @@ export default function HomePage() {
         </motion.div>
       </motion.section>
 
-      {/* ── Widget strip — theme + currently ── */}
-      <motion.section
-        className="section-strip py-3"
-        initial="hidden"
-        animate="visible"
-        variants={{ visible: { transition: { staggerChildren: 0.1, delayChildren: 0.3 } } }}
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <motion.div variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
-            <ThemeWidget />
-          </motion.div>
-          <motion.div variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
-            <LocationWidget />
-          </motion.div>
-        </div>
-      </motion.section>
-
       {/* ── Experience strip ── */}
       <section id="work" className="section-strip scroll-mt-20">
         <motion.div
@@ -132,27 +121,27 @@ export default function HomePage() {
           <SectionHeader title="experience" />
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="flex flex-col">
           {experiences.map((exp, i) => (
             <motion.div
               key={`${exp.company}-${exp.title}`}
-              className={`widget${exp.period.includes('present') ? ' widget-highlight' : ''}`}
+              className="exp-row"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: '-40px' }}
               variants={scrollReveal}
               transition={{ delay: i * 0.08 }}
             >
-              <p className="text-sm font-semibold text-ctp-text mb-0.5">
-                {exp.title}
-              </p>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-ctp-accent">{exp.company}</span>
-                <span className="text-[11px] text-ctp-overlay0 ml-auto shrink-0">
+              <div className="flex items-baseline justify-between gap-4 mb-1.5">
+                <div className="flex items-baseline gap-2 min-w-0">
+                  <span className="text-sm font-medium text-ctp-text truncate">{exp.title}</span>
+                  <span className="text-xs text-ctp-accent shrink-0">{exp.company}</span>
+                </div>
+                <span className="text-[11px] text-ctp-overlay0 shrink-0 tabular-nums">
                   {exp.period}
                 </span>
               </div>
-              <p className="text-xs text-ctp-subtext1 leading-relaxed mb-2.5">
+              <p className="text-xs text-ctp-subtext1 leading-relaxed mb-2">
                 {exp.description}
               </p>
               <TagList tags={exp.tags} />

@@ -6,9 +6,9 @@ export default function ProjectCard({ project }: { project: Project }) {
     project.status === 'live' ? 'bg-ctp-green' : 'bg-ctp-mauve';
 
   return (
-    <article className="project-card flex gap-0 border border-ctp-surface0/50 rounded-lg overflow-hidden">
+    <article className="project-card flex gap-0 border border-ctp-surface0/50 rounded-md overflow-hidden">
       {/* status accent bar */}
-      <div className={`accent-bar w-[3px] shrink-0 ${statusColor} opacity-40`} />
+      <div className={`accent-bar w-[2px] shrink-0 ${statusColor} opacity-35`} />
 
       <div className="flex-1 px-4 py-4">
         <div className="flex items-center gap-2.5 mb-1.5">
